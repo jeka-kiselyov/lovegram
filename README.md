@@ -18,4 +18,5 @@ The goal was to create a simplified web version of Telegram without using third-
 
 ### Source
 
-Will publish source code here as soon as final touches and readme files are ready.
+- [Telegram API library](https://github.com/jeka-kiselyov/teleweb)
+- Frontend coming soon, doing final touches and readme files
