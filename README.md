@@ -12,7 +12,7 @@ The goal was to create a simplified web version of Telegram without using third-
 
 ### TLDR?
 
-Built with with very simple stupid [UI component class](https://github.com/jeka-kiselyov/lovegram/tree/master/frontend/src/utils/UI.js). Main data layer is PeerManager(https://github.com/jeka-kiselyov/lovegram/tree/master/frontend/src/state/PeerManager.js). Design files were provided by TG team. Goal was to make it tiny and fast. And do everything in 3 two-weeks sprints.
+Built with with very simple stupid [UI component class](https://github.com/jeka-kiselyov/lovegram/tree/master/frontend/src/utils/UI.js). Main data layer is [PeerManager](https://github.com/jeka-kiselyov/lovegram/tree/master/frontend/src/state/PeerManager.js). Design files were provided by TG team. Goal was to make it tiny and fast. And do everything in 3 two-weeks sprints.
 
 ### Specifications
 
