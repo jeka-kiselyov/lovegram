@@ -1,0 +1,407 @@
+.leftSidebar {
+	border: 0;
+	background: #fff;
+    border-right: 1px solid #dadce0;
+	width: 420px;
+	height: 100vh;
+	overflow: hidden;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.leftSidebar .sidebarTop {
+	padding: 10px;
+	height: 40px;
+	overflow: hidden;
+}
+
+.leftSidebar .burger {
+	float: left;
+}
+
+.leftSidebar .burger, .rburger {
+	padding: 9px;
+	cursor: pointer;
+}
+
+.rburger {
+	float: right;
+	display: none;
+}
+.rburger.visible {
+	display: block;
+}
+
+
+.burger .burgerItem {
+	position: absolute;
+	z-index: 9;
+	opacity: 0;
+	transition: all .5s ease;
+}
+
+.burger .burgerItem.active {
+	opacity: 1;
+}
+
+.stTitle {
+    margin: 0 20px 0 70px;
+    font-size: 20px;
+    line-height: 45px;
+}
+
+.stOk {
+	float: right;
+	padding: 9px 0;
+	cursor: pointer;
+}
+
+.stOk svg {
+	width: 40px;
+	height: 40px;
+}
+
+.stOk path {
+	fill: #41a6ea;
+}
+
+
+
+
+
+.leftSidebar .sidebarContent {
+}
+
+.sidebarPeersPinned:not(:empty) {
+	border-bottom: 1px solid #dadce0;
+}
+
+.sidebarBlock {
+	right: 0;
+	left: 0;
+	opacity: 0;
+	visibility: hidden;
+	transition: all .5s ease;
+	position: absolute;
+	top: 60px;
+	bottom: 0;
+	overflow: hidden;
+}
+
+.sidebarBlock.active {
+	visibility: visible;
+	opacity: 1;
+}
+
+.sidebarScroll {
+	position: relative;
+	overflow: hidden;
+	height: calc(100vh - 61px);
+}
+
+
+.loadingMore {
+	height: 10px;
+	padding: 10px;
+	overflow: hidden;
+	opacity: 0;
+	transition: all .5s ease;
+}
+.loadingMore.active {
+	opacity: 1;
+}
+
+
+.searchBox {
+	border: 2px solid #f4f4f5;
+	background: #f4f4f5;
+	border-radius: 30px;
+	margin: 0 20px 0 60px;
+	padding: 2px;
+	transition: all .5s ease;
+}
+
+.searchBox .searchIcon {
+	float: left;
+	width: 30px;
+	padding: 7px;
+}
+
+.searchBox .searchIcon path {
+	transition: all .5s ease;
+	fill: #abb2b7;
+}
+
+.searchBox .searchInput {
+	margin-left: 30px;
+}
+
+.searchInput input {
+	background: transparent;
+	border: 0;
+	line-height: 35px;
+	height: 35px;
+	width: 90%;
+	padding: 0;
+	margin: 0;
+}
+
+.searchBox.active {
+	border: 2px solid #50a2e9;
+	background: #ffffff;
+}
+
+.searchBox.active path {
+	fill: #50a2e9;
+}
+
+.scBlock {
+	display: block;
+	overflow: hidden;
+	margin: 2px 8px;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.scBlock .scBlockCheckbox {
+	float: left;
+	margin: 18px 10px 0px 10px;
+}
+
+.scBlockCheckbox .checkbox {
+	position: relative;
+}
+
+.scBlock:hover {
+	background-color: #f4f4f5;
+}
+
+.scBlock.active {
+	background-color: #f4f4f5;
+}
+
+.scBlock .avatar {
+	float: left;
+	margin: 9px;
+}
+
+
+.scBlockMessage {
+/*	height: 64px;
+	margin: 14px 41px 0 65px;*/
+	margin-top: 17px;
+}
+
+.scBlockTitle {
+	color: #000000;
+	font-weight: bold;
+	height: 12px;
+	overflow: hidden;
+}
+
+.scBlockBody {
+	padding-top: 8px;
+	color: #707579;
+	height: 14px;
+	display: block;
+	overflow: hidden;
+}
+
+.scBlockBody span {
+	color: #000000;
+}
+
+.scBlockBody span:after {
+	content: ": ";
+}
+
+span.search {
+	color: #1da1f1;
+}
+.scBlockBody span.search:after {
+	content: "";
+}
+
+.scBlockMeta {
+	float: right;
+	margin-right: 8px;
+	width: 40px;
+	overflow: hidden;
+}
+
+.scBlockTime {
+	/*padding: 10px 3px 5px 0;*/
+	color: #676b71;
+	padding: 18px 3px 0 0;
+	font-size: 11px;
+	text-align: right;
+	float: right;
+}
+
+.scBlockRead {
+	float: left;
+	position: absolute;
+	width: 20px;
+	height: 20px;
+}
+
+.scBlockRead div {
+	width: 18px;
+	height: 10px;
+	position: relative;
+	left: -18px;
+	background-size: contain;
+}
+
+.scBlockBadge {
+	font-weight: bold;
+	background-color: #4dcd5e;
+	font-size: 10px;
+	line-height: 10px;
+	min-width: 10px;
+	height: 10px;
+	text-align: center;
+	display: inline-block;
+	float: right;
+	padding: 5px;
+	border-radius: 10px;
+	overflow: hidden;
+	color: white;
+	margin: 10px auto;
+	opacity: 0;
+	transition: all .5s ease;
+}
+
+.scBlockBadgeVisible {
+	opacity: 1;
+}
+
+.smfItem .scBlockBadge {
+	display: none;
+}
+.smfItem .scBlockBadgeVisible {
+	display: block;
+}
+
+.scBlockMuted {
+	background-color: #c4c9cc;
+}
+
+.scBlockPinned {
+	background-color: #c4c9cc;
+	background-position: center center;
+	background-size: 80%;
+}
+
+.scBlockLow {
+	display: block;
+	/*height: 64px;*/
+	overflow: hidden;
+	margin: 0px 8px;
+	border-radius: 8px;
+}
+
+.scBlockLowTitle {
+	height: 54px;
+	line-height: 54px;
+	vertical-align: middle;
+	float: left;
+	margin: 9px 0 9px 0;
+	font-weight: bold;
+	overflow: hidden;
+	max-width: 60%;
+}
+
+.scBlockLow .avatar {
+	float: left;
+	margin: 9px;
+}
+
+.scBlockLowIcon {
+	float: right;
+	margin: 23px 0 0 0;
+	cursor: pointer;
+}
+
+.scBlockLowIcon path {
+	fill: #abb2b7;
+}
+
+.scBlockLowIcon:hover path {
+   fill: #808a93;
+}
+
+
+
+
+
+.sidebarSearchScroll {
+	position: relative;
+	overflow: hidden;
+}
+
+
+.sidebarSearchBlock h3 {
+	color: #707579;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 20px 0 20px 20px;
+}
+
+
+.sidebarTop .menu {
+	top: 50px !important;
+	right: auto !important;
+	left: 10px !important;
+}
+
+.menuTop.rburger .menu {
+	left: 100px !important;
+}
+
+
+
+
+
+
+.smFolders {
+	height: 40px;
+	overflow: hidden;
+	border-bottom: 1px solid #dbdde1;z
+}
+
+.smfScroll {
+	width: 10000px !important;
+}
+
+.smfItem {
+	cursor: pointer;
+	margin: 0 15px;
+	padding: 0 10px;
+	line-height: 36px;
+	height: 36px;
+	overflow: hidden;
+	float: left;
+	text-align: center;
+	border-bottom: 4px solid #ffffff;
+}
+
+.smfItem.active, .smfItem:hover {
+	border-bottom: 4px solid #50a2e9;
+}
+
+.smfItem .scBlockBadge {
+	margin: 8px 0 5px 5px;
+	background-color: #41a6ea;
+}
+
+.smf {
+	opacity: 0;
+	display: none;
+}
+
+.smf.active {
+	display: block;
+	opacity: 1;
+}

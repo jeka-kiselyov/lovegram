@@ -1,0 +1,92 @@
+.menuContainer {
+	position: absolute;
+	z-index: 22222222;
+
+}
+
+.menu {
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	padding: 10px;
+	border-radius: 10px;
+	width: 200px;
+	background: white;
+	z-index: 22222222;
+	opacity: 0;
+	transform:scale(0.01, 0.01);
+	transform-origin: 100% 100%;
+	transition: transform .5s ease, opacity .5s ease;
+}
+
+.br .menu {
+
+	margin-left: -200px;
+	margin-top: -150px;
+}
+
+.tr .menu {
+	transform-origin: 100% 0%;
+	margin-left: -200px;
+}
+
+.bl .menu {
+	transform-origin: 0% 100%;
+	margin-top: -150px;
+}
+
+.tl .menu {
+	transform-origin: 0% 0%;
+}
+
+.menu.active {
+	opacity: 1;
+	transform: translateX(50%);
+	transform: scale(1, 1);
+}
+
+.menuItem {
+	height: 22px;
+	overflow: hidden;
+	padding: 12px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+.miIcon {
+	float: left;
+	width: 25px;
+	vertical-align: middle;
+	height: 24px;
+	vertical-align: middle;
+}
+
+.miIcon path {
+	fill: #707579;
+}
+
+.mtTitle {
+	line-height: 24px;
+	margin-left: 35px;
+	vertical-align: middle;
+	text-align: left;
+	font-size: 15px;
+}
+
+.mtTitle .scBlockBadge {
+	margin-top: 3px;
+}
+
+.menuItem:hover {
+	background-color: #f4f4f5;
+}
+
+
+.menuOver {
+	background: transparent;
+	width: 40px;
+	height: 100px;
+	position: fixed;
+	bottom: 0px;
+	z-index: 22222221;
+}

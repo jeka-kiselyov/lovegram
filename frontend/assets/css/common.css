@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap&subset=cyrillic');
+@import './elements/clear.css';
+@import './elements/authForm.css';
+@import './elements/imageCrop.css';
+@import './elements/checkbox.css';
+@import './elements/ps.css';
+@import './elements/ripple.css';
+
+
+#avmemory {
+	position: fixed;
+	left: 50000px;
+	top: 10000px;
+}

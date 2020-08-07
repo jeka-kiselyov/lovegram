@@ -1,0 +1,540 @@
+.rightSidebar {
+	border: 0;
+	background: #fff;
+    border-left: 1px solid #dadce0;
+	width: 420px;
+	height: 100vh;
+	overflow: hidden;
+	position: absolute;
+	right: 0px;
+	top: 0;
+	transform: translateX(0px);
+    z-index: 5000;
+	transition: all .5s ease;
+}
+
+.rightSidebarClosed {
+	transform: translateX(420px);
+}
+
+.rightSidebarTop {
+	height: 40px;
+	padding: 8px;
+}
+
+.rsTopIcon {
+	cursor: pointer;
+	float: left;
+}
+
+.rsTopIcon .rsTopIconItem  {
+	position: absolute;
+	z-index: 9;
+	opacity: 0;
+	transition: all .5s ease;
+	z-index: 1;
+}
+
+.rsTopIcon .rsTopIconItem.active {
+	opacity: 1;
+	z-index: 2;
+}
+
+
+.rsTopIconItem {
+	display: inline-block;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	line-height: 44px;
+	overflow: hidden;
+	background-color: #ffffff;
+	transition: all .5s ease;
+}
+
+.rsTopIconItem svg {
+	vertical-align: middle;
+	width: 24px;
+	height: 24px;
+}
+
+.rsTopIconItem {
+	cursor: pointer;
+	text-align: center;
+}
+
+.rsTopIconItem path {
+	fill: #707579;
+}
+
+.rsTopIconItem:hover {
+	background-color: #f4f4f5;
+}
+
+.rsTopIconItem:hover path {
+	fill: #707579;
+}
+
+
+
+
+
+
+
+
+
+
+
+.rsTopBlock {
+	display: none;
+	height: 50px;
+}
+
+.rsTopBlock.active {
+	display: block;
+}
+
+.rsTopBlock h5 {
+	margin: 0 0 0 80px;
+	padding: 0;
+	font-size: 16px;
+	color: #000000;
+	font-weight: bold;
+	line-height: 46px;
+}
+
+
+.rightSidebarContent {
+	overflow: hidden;
+}
+
+.rightSidebarBlock {
+	display: none;
+	overflow: hidden;
+	position: absolute;
+	right: 0px;
+	top: 50px;
+    width: 420px;
+	bottom: 0;
+}
+
+.rightSidebarBlock.active {
+	display: block;
+}
+
+.rightSidebarInfo {
+
+}
+
+
+.rsInfoProfile {
+	margin: 10px 0 10px 0;
+}
+
+.rsInfoAvatar {
+	width: 125px;
+	height: 125px;
+	margin: 0 auto;
+	border-radius: 50%;
+	background-position: center center;
+	background-size: 100%;
+}
+
+.rsInfoName {
+	margin-top: 26px;
+	font-weight: bold;
+	text-align: center;
+	font-size: 20px;
+}
+
+.rsInfoStatus {
+	text-align: center;
+	margin-top: 10px;
+	color: #707579;
+}
+
+.rsInfoStatusOnline {
+	color: #50a2e9;
+}
+
+.rsInfoItems {
+	margin-top: 35px;
+	flex: 1;
+}
+
+.rsInfoItem {
+	margin: 0px 25px 30px 25px;
+}
+
+.rsiIcon {
+	float: left;
+	width: 25px;
+	height: 25px;
+}
+
+.rsiIcon path {
+	fill: #707579;
+}
+
+.rsiValue {
+	margin-left: 55px;
+	padding-top: 3px;
+}
+
+.rsiField {
+	color: #707579;
+	margin-top: 8px;
+	margin-left: 55px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.rsInfoBlocksNavs {
+	border-bottom: 1px solid #dadce0;
+	height: 47px;
+	overflow: hidden;
+	padding: 0 25px;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+.rsInfoBlocksNav {
+	display: inline-block;
+	text-align: left;
+	line-height: 53px;
+	vertical-align: middle;
+	font-size: 16px;
+	border-bottom: 4px solid #ffffff;
+	color: #707579;
+	cursor: pointer;
+	transition: all .5s ease;
+	height: 43px;
+	overflow: hidden;
+}
+
+.rsInfoBlocksNav:hover {
+	border-bottom: 4px solid #50a2e9;
+	color: #50a2e9;
+
+}
+
+.rsInfoBlocksNav.active {
+	border-bottom: 4px solid #50a2e9;
+	color: #50a2e9;
+}
+
+
+
+
+.rsInfoBlocks {
+	overflow: hidden;
+	position: relative;
+	height: 200px;
+}
+
+.rsInfoBlock {
+	display: none;
+}
+
+.rsInfoBlock.active {
+	display: block;
+}
+
+.rsInfoBlocks .appLoading {
+    top: 50px;
+}
+
+
+
+
+
+
+
+
+
+#rsMediaItems {
+	padding: 0px 1px 0px 7px;
+	position: relative;
+}
+
+.rsMedia {
+	float: left;
+	margin: 0 5px 5px 0;
+	cursor: pointer;
+}
+
+.rsMedia, .rsMediaPreview {
+	width: 132px;
+	height: 132px;
+	background-position: center center;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+.rsMedia .duration {
+	margin: 5px;
+	background: rgba(0,0,0,0.4);
+	color: white;
+	float: left;
+	padding: 3px 5px;
+	border-radius: 5px;
+}
+
+.rsDocsMore {
+	clear: both;
+	height: 50px;
+	padding-top: 30px;
+}
+
+
+
+
+.rsDocsItems {
+	padding: 0 10px;
+	position: relative;
+}
+
+.rsDoc {
+	clear: both;
+	padding: 10px 15px 20px 15px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+.rsDoc:hover {
+	background: #f4f4f5;
+}
+
+.rsDocIcon {
+	float: left;
+	height: 47px;
+	width: 47px;
+	border-radius: 5px;
+	overflow: hidden;
+    position: relative;
+	/*-webkit-clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 10px, 54px 0);*/
+	/*-webkit-clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 17px, 67px 0);*/
+	clip-path: polygon(70% 0, 100% 30%, 100% 100%, 0 100%, 0 0);
+	/*background: #e53935;*/
+	font-size: 16px;
+	color: #ffffff;
+	text-align: center;
+	line-height: 60px;
+	vertical-align: middle;
+	overflow: hidden;
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 20px 20px;
+}
+
+.rsDocIcon:before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    top: -2px; right: -2px;
+    width: 15px;
+    height: 15px;
+    background: rgba(0,0,0,0.2);
+}
+
+.rsDocIcon.ready, .rsDocIcon.loading {
+	clip-path: polygon(100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
+	text-indent: -99999px;
+}
+
+
+.rsDocIcon.ready:before, .rsDocIcon.loading:before {
+    background: rgba(0,0,0,0.0);
+}
+
+.rsDocIcon .progress {
+	position: absolute;
+	width: 25px;
+	height: 25px;
+	top: 9px;
+	left: 9.3px;
+	border: 2px solid #ffffff;
+	border-radius: 50%;
+	display: none;
+}
+
+.progress.active {
+	display: block;
+}
+
+.progress0 {
+	clip-path: polygon(50% 0%, 51% 48%, 87% 0);
+}
+
+.progress10 {
+	clip-path: polygon(50% 0%, 51% 48%, 87% 0);
+}
+
+.progress20 {
+	clip-path: polygon(50% 0, 100% 0, 100% 50%, 50% 50%);
+}
+
+.progress30 {
+	clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 50%);
+}
+
+.progress40 {
+	clip-path: polygon(50% 0%, 100% 0, 100% 100%, 79% 100%, 50% 48%, 50% 47%);
+}
+
+.progress50 {
+	clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%, 50% 63%, 50% 51%);
+}
+
+.progress60 {
+	clip-path: polygon(50% 0%, 100% 0, 100% 100%, 10% 100%, 50% 48%, 50% 47%);
+}
+
+.progress70 {
+	clip-path: polygon(100% 0, 100% 100%, 0 100%, 0 70%, 50% 48%, 50% 0);
+}
+
+.progress80 {
+	clip-path: polygon(100% 0, 100% 100%, 0 100%, 0 38%, 50% 48%, 50% 0);
+}
+
+.progress90 {
+	clip-path: polygon(100% 0, 100% 100%, 0 100%, 0 0, 50% 48%, 50% 0);
+}
+
+.progress100 {
+	clip-path: none;
+}
+
+.progress div {
+	/*border-radius: 50%;
+	border-color: #fff;
+	width: 25px;
+	height: 25px;*/
+}
+
+
+.rsDocName {
+	margin-left: 62px;
+	padding-top: 8px;
+	color: #000000;
+	font-size: 14px;
+	height: 16px;
+	overflow: hidden;
+	width: 250px;
+}
+
+.rsDocMeta {
+	margin-left: 62px;
+	padding-top: 4px;
+	color: #707579;
+}
+
+
+
+
+
+
+
+
+#rsAudioItems .audio {
+	margin: 0px 10px 10px 10px;
+}
+
+#rsAudioItems .audioArtist, #rsAudioItems .audioTime, #rsAudioItems .audioTrack {
+	padding-top: 3px;
+}
+
+
+
+
+
+.rsWebpage {
+	margin: 10px;
+	display: block;
+	text-decoration: none;
+	clear: both;
+}
+
+.rswPreview {
+	float: left;
+	width: 40px;
+	display: block;
+	height: 40px;
+	background-size: cover;
+	background-position: center;
+	border-radius: 8px;
+	margin-bottom: 8px;
+	line-height: 40px;
+	color: #ffffff;
+	text-align: center;
+	font-size: 20px;
+}
+
+.rswTitle, .rswDesc, .rswUrl {
+	display: block;
+	margin-left: 48px;
+	max-height: 12px;
+	overflow: hidden;
+}
+
+.rswTitle {
+	color: #000000;
+	font-weight: bold;
+}
+
+.rswDesc {
+	color: #707579;
+	max-height: 25px;
+}
+
+.rswUrl {
+	color: #50a2e9;
+}
+
+.rsWebpage:hover .rswUrl {
+	text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+
+@media (max-width:850px) {
+	.rsMedia {
+		width: 19%;
+		margin-right: 1%;
+	}
+
+	.rsMedia .rsMediaPreview {
+		width: 100%;
+	}
+}
+
+@media (max-width:550px) {
+	.rsMedia {
+		width: 24%;
+		margin-right: 1%;
+	}
+
+	.rsMedia .rsMediaPreview {
+		width: 100%;
+	}
+}

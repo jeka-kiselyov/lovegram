@@ -1,0 +1,293 @@
+
+.panelNewMessage {
+	position: sticky;
+	bottom: 0px;
+	z-index: 10000;
+/*	margin: 0 auto;
+	max-width: 700px;*/
+	padding-bottom: 30px;
+	padding-top: 10px;
+	/*background: linear-gradient(0deg, rgba(230,235,238,1) 0%, rgba(230,235,238,1) 90%, rgba(255,255,255,0) 100%);*/
+    /*margin: 0 -5px 0 -45px;*/
+
+	transition: bottom .5s ease;
+}
+
+.newMessageContainer {
+	margin: 0 auto;
+	max-width: 700px;
+	position: relative;
+}
+
+.newMessageEmoji {
+	width: 30px;
+	height: 34px;
+	float: left;
+}
+
+.newMessageText {
+	margin: 0 48px 0 30px;
+}
+
+.withVoice .newMessageText {
+	margin-right: 118px;
+}
+
+
+.newMessageComposer {
+	position: relative;
+	/*left: -40px;*/
+	background: #ffffff;
+	color: black;
+	border-radius: 8px 8px 0px 8px;
+	padding: 0px 14px 0px 14px;
+	margin-right: 60px;
+	min-height: 10px;
+	font-size: 14px;
+	line-height: 16px;
+	transition: all .5s ease;
+}
+
+.withVoiceRecorded .newMessageComposer {
+	margin-right: 120px;
+}
+
+.newMessageButton, .deleteVoiceButton {
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	z-index: 10001;
+	width: 52px;
+	height: 52px;
+	border-radius: 50%;
+	background: #ffffff;
+	cursor: pointer;
+}
+
+ .deleteVoiceButton {
+ 	z-index: 10000;
+	transition: all .5s ease;
+}
+
+.nmbType {
+	position: absolute;
+	width: 24px;
+	height: 24px;
+	padding: 14px;
+	opacity: 0;
+}
+
+.withVoiceRecorded .deleteVoiceButton {
+	right: 60px;
+}
+
+#sendVoice {
+	opacity: 1;
+}
+
+.withVoiceRecorded #sendVoice, .withText #sendVoice {
+	opacity: 0;
+}
+.withVoiceRecorded #sendMessage, .withText #sendMessage  {
+	opacity: 1;
+}
+
+.deleteVoiceButton .nmbType {
+	opacity: 1;
+}
+
+.newMessageButton:hover, .deleteVoiceButton:hover {
+	-webkit-box-shadow: 0px 0px 0px 3px rgba(0,0,0,0.1);
+	box-shadow: 0px 0px 0px 3px rgba(0,0,0,0.1);
+}
+
+.newMessageButton path {
+	fill: #50a2e9;
+}
+
+.deleteVoiceButton path {
+	fill: #df3f40;
+}
+
+.newMessageComposer:before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    bottom: -2px;
+    right: -18px;
+    height: 16px;
+/*    border-right: 20px solid #ffffff;
+    border-bottom-left-radius: 16px 14px;
+    -webkit-transform: translate(0, -2px);*/
+
+    width: 20px;
+    height: 16px;
+    background: white;
+	clip-path: url(#rightBubble);
+	-webkit-clip-path: url(#rightBubble);
+}
+/*
+.newMessageComposer:after {
+    content: "";
+    position: absolute;
+    z-index: 4;
+    bottom: -2px;
+    right: -56px;
+    width: 26px;
+    height: 16px;
+    background: #e6ebee;
+    border-bottom-left-radius: 10px;
+    -webkit-transform: translate(-30px, -2px);
+
+}*/
+
+.newMessageComposer textarea {
+	padding: 0;
+	border: 0;
+	background: #ffffff;
+	color: #000000;
+	min-width: 100%;
+	max-width: 100%;
+	/*overflow:hidden;*/
+	resize: none;
+	font-size: 14px;
+	line-height: 14px;
+	height: 14px;
+	margin: 9px 0 9px 0;
+	padding: 8px 0 8px 0;
+	transition: all .5s ease;
+	font-family: inherit;
+}
+
+textarea.newMessageLarge {
+	height: 100px;
+}
+
+textarea.newMessageHuge {
+	height: 200px;
+}
+
+textarea::-webkit-scrollbar {
+   display: none;
+}
+
+.newMessageAttached {
+	padding-top: 8px;
+	margin-left: -8px;
+	overflow: hidden;
+	height: 0px;
+	transition: all .5s ease;
+}
+
+.newMessageAttached.hasSomething {
+	height: 34px;
+}
+
+.newMessageAttached .newMessageAttachedCont {
+	float: left;
+	margin-left: 4px;
+	margin-bottom: 0;
+	display: none;
+}
+
+.newMessageAttached .newMessageAttachedCont.active {
+	display: block;
+}
+
+.newMessageAttached .removeAttach {
+	width: 40px;
+	height: 40px;
+	padding: 0 0 0 0;
+	overflow: hidden;
+	float: left;
+	text-align: center;
+	cursor: pointer;
+}
+
+.newMessageAttached .removeAttach path {
+	fill: #8d969c;
+}
+
+.newMessageAttached .removeAttach:hover path {
+	fill: #50a2e9;
+}
+
+
+
+
+.newMessageAttachment {
+	width: 24px;
+	height: 44px;
+	float: right;
+	text-align: center;
+}
+
+.newMessageAttachment .attachButton {
+	position: absolute;
+	bottom: 13px;
+	vertical-align: bottom;
+	cursor: pointer;
+}
+
+.withVoice .newMessageAttachment {
+	display: none;
+}
+
+
+.newMessageVoice {
+	float: right;
+	text-align: right;
+	line-height: 44px;
+	height: 44px;
+	width: 100px;
+	overflow: hidden;
+	display: none;
+}
+
+.nmvDuration {
+	font-size: 14px;
+	vertical-align: middle;
+	display: inline-block;
+}
+
+.nmvRecording {
+	display: inline-block;
+	background: #df3f40;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	vertical-align: middle;
+	margin: 20px 10px 20px 10px;
+	opacity: 0;
+}
+
+.nmvRecording.active {
+	opacity: 1;
+}
+
+.withVoice .newMessageVoice {
+	display: block;
+}
+
+
+.emojiButton {
+	position: absolute;
+	bottom: 13px;
+	vertical-align: bottom;
+	cursor: pointer;
+}
+
+.emojiButton path, .attachButton path {
+	fill: #8d969c;
+}
+
+.emojiButton.active path, .emojiButton:hover path, .attachButton.active path, .attachButton:hover path  {
+	fill: #50a2e9;
+}
+
+
+@media (max-width:850px) {
+	.panelNewMessage.emojiOn {
+		bottom: 430px;
+	}
+}

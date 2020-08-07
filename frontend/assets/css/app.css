@@ -1,0 +1,106 @@
+@import './elements/sidebar.css';
+@import './elements/sidebarFolders.css';
+@import './elements/avatar.css';
+@import './elements/newMessage.css';
+@import './elements/emojiDialog.css';
+@import './elements/rightSidebar.css';
+@import './elements/rightSidebarForward.css';
+@import './elements/rightSidebarStickers.css';
+@import './elements/rightSidebarPoll.css';
+@import './elements/mediaBrowser.css';
+@import './elements/menu.css';
+@import './elements/upload.css';
+@import './elements/panelTopBar.css';
+@import './elements/panel.css';
+@import './elements/emojiPopup.css';
+@import './elements/icons.css';
+@import './elements/polls.css';
+@import './elements/audio.css';
+@import './elements/albums.css';
+
+
+.appLoading {
+	position: relative;
+	top: 45vh;
+}
+
+.appLoading .cssload-zenith {
+	width: 56px;
+	height: 56px;
+}
+
+
+
+
+
+
+@media (max-width:1600px) {
+	.rightSidebar {
+		position: absolute;
+	}
+}
+@media (max-width:1240px) {
+	.leftSidebar {
+		width: 320px;
+	}
+	.panelPos {
+	    margin-left: 320px;
+	}
+}
+@media (max-width:1100px) {
+	.panelPos {
+	    margin-right: 0px;
+	}
+}
+@media (max-width:850px) {
+	.leftSidebar {
+		position: absolute;
+		width: 100%;
+	}
+	.panelPos {
+		position: absolute;
+	    margin-left: 0px;
+	    width: 100%;
+	}
+	.panelPos {
+		position: absolute;
+		right: 0;
+		transition: 0.3s;
+		opacity: 1;
+		z-index: 5002;
+	}
+	.panel {
+	    top: 61px;
+		z-index: 5001;
+	}
+	.invisible .panelPos  {
+		right: -100%;
+		opacity: 0;
+	}
+	.messageMedia {
+		min-width: 70%;
+	}
+	.panelMessage.withPhoto  {
+		min-width: 70%;
+	}
+	.rightSidebar {
+		position: absolute;
+		z-index: 15000;
+		position: absolute;
+		width: 100%;
+	}
+	.rightSidebarMobileClosed {
+		transform: translateX(100%);
+	}
+	.rightSidebarBlock {
+		width: 100%;
+	}
+
+}
+
+
+@media (max-width: 419px) {
+	/* shrink panel */
+
+}
+
