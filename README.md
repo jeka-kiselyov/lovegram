@@ -31,18 +31,19 @@ Built with with very simple stupid [UI component class](https://github.com/jeka-
 Some cleaning up of source code needed, there may be some outdated files in this repository. @todo: test coverage and get rid of junk.
 
 ### As of libraries used:
-	- [TeleJS](https://github.com/RD17/TeleJS) many thanks to RD17 team for their API library. My fork with few changes, updated layer, websocket support and SRP auth helpers named [Teleweb](https://github.com/jeka-kiselyov/teleweb) is available [here](https://github.com/jeka-kiselyov/teleweb).
-	- [SquirrellyJS](https://squirrelly.js.org/) as a template engine. Fast, tiny and nice.
-	- [libwebpjs](http://libwebpjs.hohenlimburg.org/) for webp in Safari support. (Thanks [spalt08](https://github.com/spalt08) for the help with it).
-	- [Lottie](https://github.com/airbnb/lottie-web) for TGS animations.
-	- [opus-recorder](https://github.com/chris-rudmin/opus-recorder) for recording ogg voice messages.
+
+- [TeleJS](https://github.com/RD17/TeleJS) many thanks to RD17 team for their API library. My fork with few changes, updated layer, websocket support and SRP auth helpers named [Teleweb](https://github.com/jeka-kiselyov/teleweb) is available [here](https://github.com/jeka-kiselyov/teleweb).
+- [SquirrellyJS](https://squirrelly.js.org/) as a template engine. Fast, tiny and nice.
+- [libwebpjs](http://libwebpjs.hohenlimburg.org/) for webp in Safari support. (Thanks [spalt08](https://github.com/spalt08) for the help with it).
+- [Lottie](https://github.com/airbnb/lottie-web) for TGS animations.
+- [opus-recorder](https://github.com/chris-rudmin/opus-recorder) for recording ogg voice messages.
 
 ### Installation
 
 ```bash
-	git clone https://github.com/jeka-kiselyov/lovegram.git
-	cd lovegram
-	npm install
+git clone https://github.com/jeka-kiselyov/lovegram.git
+cd lovegram
+npm install
 ```
 
 ### How can I run it?
@@ -50,7 +51,7 @@ Some cleaning up of source code needed, there may be some outdated files in this
 Start in dev mode
 
 ```bash
-	node app.js
+node app.js
 ```
 
 Open `localhost:9090`
@@ -58,9 +59,8 @@ Open `localhost:9090`
 Build the dist
 
 ```bash
-	grunt
+grunt
 ```
-
 
 #### License
 
