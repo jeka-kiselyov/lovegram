@@ -116,10 +116,19 @@ class AppInterface extends UI {
 		}
 	}
 
+	// *
+	//  * Enable/Disable native swipes
+	//  * @param {[type]} on [description]
+
+	// setSwipes(on) {
+	// 	this._disableSwipes = !on;
+	// }
+
 	swipeHandlers() {
 		this._xDown = null;
 		this._yDown = null;
 		this.__handleTouchStart = (e) => {
+			if (e.touches[0].target.closest('.noswipe')) return;
 			this._xDown = e.touches[0].clientX;
 			this._yDown = e.touches[0].clientY;
 		};
@@ -161,6 +170,10 @@ class AppInterface extends UI {
 		    this._xDown  = null;
 		    this._yDown = null;
 		    }
+
+		    // if (this._disableSwipes) {
+			   //  e.preventDefault();
+		    // }
 		};
 
 		document.addEventListener('touchstart', this.__handleTouchStart, false);
@@ -171,6 +184,8 @@ class AppInterface extends UI {
 		let peer = null;
 		if (params.what == 'author') {
 			peer = await params.message.getAuthorDialog();
+		} else if (params.peerId && this._app._peerManager._peers[params.peerId]) {
+			peer = this._app._peerManager._peers[params.peerId];
 		} else {
 			peer = await params.message.getFWDPeer();
 		}
@@ -233,7 +248,7 @@ class AppInterface extends UI {
 			this._components.PanelTopBar = undefined; // ? delete
 			this._components.EmojiDialog = undefined; // ? delete
 
-			this._app._peerManager.stopNextStateLoop();
+			// this._app._peerManager.stopNextStateLoop();
 			this._app._peerManager._media.clearEventListeners();
 			this._app._peerManager._stickers.clearEventListeners();
 			this._app._peerManager.clearEventListeners();

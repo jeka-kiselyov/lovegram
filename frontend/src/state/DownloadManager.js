@@ -29,11 +29,12 @@ class DownloadManager extends EventTarget {
 	}
 
 	async tick() {
+		let tm = 100;
 		if (this._docsToDownload.length) {
 			let docItem = this._docsToDownload[0];
 
 			try {
-				await docItem.downloadNextPart();
+				await docItem.downloadNextPart(!!docItem._downloadingSize); // get 1st part in one thread, next in parallel
 			} catch(e) {
 				console.log(e);
 			}
@@ -45,11 +46,12 @@ class DownloadManager extends EventTarget {
 			} else {
 				this.emit('progress', docItem);
 			}
+			tm = 10;
 		}
 
 		setTimeout(()=>{
 			this.tick();
-		}, 100);
+		}, tm);
 	}
 }
 

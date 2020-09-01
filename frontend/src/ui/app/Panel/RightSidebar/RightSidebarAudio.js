@@ -150,7 +150,7 @@ class RightSidebarAudio extends RightSidebarInfoAbstract {
 	}
 
 	timeupdate(params) {
-		console.error('timeupdate', params);
+		// console.error('timeupdate', params);
 	}
 
 	// async loadMoreItems(initialization) {

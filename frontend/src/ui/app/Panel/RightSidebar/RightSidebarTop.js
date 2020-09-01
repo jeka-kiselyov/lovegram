@@ -8,7 +8,7 @@ class RightSidebarTop extends UI {
 
 		this._components.BackIcon = this.newC(AppIcon, {icon: 'back'});
 		this._components.CloseIcon = this.newC(AppIcon, {icon: 'close'});
-		this._components.SearchBox = this.newC(SearchBox),
+		this._components.SearchBox = this.newC(SearchBox);
 
 		this._events = [
 			['click', 'rsTopIcon', 'onClickIcon'],

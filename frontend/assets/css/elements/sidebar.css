@@ -196,14 +196,14 @@
 .scBlockTitle {
 	color: #000000;
 	font-weight: bold;
-	height: 12px;
+	height: 17px;
 	overflow: hidden;
 }
 
 .scBlockBody {
-	padding-top: 8px;
+	padding-top: 4px;
 	color: #707579;
-	height: 14px;
+	height: 16px;
 	display: block;
 	overflow: hidden;
 }
@@ -396,12 +396,20 @@ span.search {
 	background-color: #41a6ea;
 }
 
+
 .smf {
+	position: absolute;
+	left: 0; right: 0;
+	/*transform: translateX(100%);*/
 	opacity: 0;
 	display: none;
+	transition: all .4s ease;
 }
-
 .smf.active {
+	/*transform: translateX(0%);*/
 	display: block;
 	opacity: 1;
 }
+/*.smf.hideToLeft {
+	transform: translateX(-100%);
+}*/

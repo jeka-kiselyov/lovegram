@@ -32,8 +32,11 @@ class SidebarMain extends SidebarAbstract {
 			}
 		});
 		this._peerManager.on('initialPeer',(params)=>{
-			this.setActivePeer(params.peer);
-			this._app._interface.onPeerSelected({peer: params.peer});
+			if (!this.isTouchDevice()) {
+				// if we are on desktop
+				this.setActivePeer(params.peer);
+				this._app._interface.onPeerSelected({peer: params.peer});
+			}
 		});
 
 		this._components.SidebarDialogs.setActive(true);
@@ -41,11 +44,17 @@ class SidebarMain extends SidebarAbstract {
 	}
 
 	async updateBadge(folder) {
-		let to = 500;
+		if (!folder) {
+			// update all folders badges
+			const a = []; for (let i in this._renderedFolders) { a.push(this.updateBadge(this._peerManager._folders[i])); }
+			return await Promise.all(a);
+		}
+
+		let to = 200;
 
 		if (this._updateBadgeTO[folder._id]) {
 			clearTimeout(this._updateBadgeTO[folder._id]);
-			to = 2000;
+			to = 1000;
 		}
 
 		this._updateBadgeTO[folder._id] = setTimeout(async()=>{
@@ -115,8 +124,20 @@ class SidebarMain extends SidebarAbstract {
 		if (closest && base.contains(closest)) {
 			this.selectFolder(closest.dataset.id);
 
+			let was = false;
 			this.$$('.smf').forEach((el)=>{
-				el.classList[(el.dataset.id == closest.dataset.id ? 'add' : 'remove')]('active');
+				if (el.dataset.id == closest.dataset.id) {
+					was = true;
+					el.classList.add('active');
+					// el.classList.remove('hideToLeft');
+				} else {
+					el.classList.remove('active');
+					// if (!was) {
+					// 	el.classList.add('hideToLeft');
+					// } else {
+					// 	el.classList.remove('hideToLeft');
+					// }
+				}
 			});
 
 			this._components.folders[closest.dataset.id].setActive(true);

@@ -8,6 +8,7 @@
 @import './elements/rightSidebarStickers.css';
 @import './elements/rightSidebarPoll.css';
 @import './elements/mediaBrowser.css';
+@import './elements/videoPlayer.css';
 @import './elements/menu.css';
 @import './elements/upload.css';
 @import './elements/panelTopBar.css';
@@ -17,6 +18,7 @@
 @import './elements/polls.css';
 @import './elements/audio.css';
 @import './elements/albums.css';
+@import './elements/calendar.css';
 
 
 .appLoading {

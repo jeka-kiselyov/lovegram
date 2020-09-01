@@ -139,10 +139,10 @@ class LeftSidebar extends UI {
 	onPeerSelected(data) {
 		this.emit('peer', data);
 		// if (!data.messageId) {
-		if (this._currentBlock == 'Search') {
-			this.showBlock('Main');
-			this._components.SearchBox.setActive(false);
-		}
+		// if (this._currentBlock == 'Search') {
+			// this.showBlock('Main');
+			// this._components.SearchBox.setActive(false);
+		// }
 
 		this._components.SidebarMain.setActivePeer(data.peer);
 		this._components.SidebarArchived.setActivePeer(data.peer);

@@ -27,8 +27,9 @@ class RightSidebarInfoAbstract extends AppUI {
 		}
 
 		this._loadingMoreItems = true;
+		let c = this._data.items.length;
 		let items = await this._data.peer['load'+this._itemsName](initialization);
-		console.error('loading '+this._itemsName+' count: '+items.length, initialization, this._data.peer._id);
+		// console.error('loading '+this._itemsName+' count: '+items.length, initialization, this._data.peer._id);
 
 		if (items.length > 0) {
 			this._data.items = items;
@@ -41,6 +42,7 @@ class RightSidebarInfoAbstract extends AppUI {
 		}
 
 		this._loadingMoreItems = false;
+		this._lastCount = (this._data.items.length - c);
 
 		await new Promise((res)=>{
 			this.nextTick(()=>{
@@ -177,7 +179,7 @@ class RightSidebarInfoAbstract extends AppUI {
 
 		this.$('.rsDocsMore').classList.remove('hidden');
 		let c = 0;
-		while(!this.isHeightFilled() && c < 5) {
+		while(this._lastCount && !this.isHeightFilled() && c < 5) {
 			await this.loadMoreItems();
 			c++;
 		}

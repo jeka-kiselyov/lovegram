@@ -7,12 +7,13 @@ class Streamable {
 		this._peerManager = params.peerManager;
 		this._peer = params.peer;
 
+		this._peerMessage = params.peerMessage;
 		this._messageApiObject = params.messageApiObject || {};
 
 		this._isDownloading = false;
 		this._downloadingPercentage = 0;
 		this._downloadingSize = 0;
-		this._downloadingSizeHuman = '';
+		this._downloadingSizeHuman = '0';
 		this._downloadingPartN = 0;
 
 		// this._totalParts = 1;
@@ -36,20 +37,28 @@ class Streamable {
 		}
 
 		let items = [];
+		let cached = [];
+		let cachedCount = 0;
 		for (let i = 0; i < this._totalParts; i++) {
 			items.push({url: './tg/doc_'+this._id+'_part_'+i+'.dat', i: i});
 		}
 		await this._peerManager._user._protocol.getCachedResources(items);
 		for (let item of items) {
 			if (item.blob) {
+				cachedCount++;
 				this._downloadedParts[item.i] = true;
 				this._partBlobs.push({n: item.i, blob: item.blob});
+				cached.push(item.i);
 				this._peerManager._user._protocol.fulfillSWStream(this.id, item.i);
 
-				if (item.i == this._totalParts - 1) {
-					this._isDownloaded = true;
-				}
+				// if (item.i == this._totalParts - 1) {
+				// 	this._isDownloaded = true;
+				// }
 			}
+		}
+
+		if (cachedCount == items.length) {
+			this._isDownloaded = true;
 		}
 	}
 
@@ -88,7 +97,10 @@ class Streamable {
 				link.download = this.getInfo('filename');
 			    document.body.appendChild(link);
 				link.innerHTML = "download";
+				link.classList.add('hidden');
 				link.click();
+
+				link.remove();
 
 				if (revoke) {
 				    window.URL.revokeObjectURL(blobUrl);
@@ -129,6 +141,11 @@ class Streamable {
 	    return ( size / Math.pow(1024, sizeI) ).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][sizeI];
 	}
 
+	heatServersUp() {
+		// no need to wait
+		this._peerManager._media.heatServersUp(this._apiObject);
+	}
+
 	async downloadPart(n) {
 		console.error(n)
 		if (!this._downloadedParts[n]) {
@@ -136,7 +153,7 @@ class Streamable {
 
 			// console.error('asked get '+n);
 			try {
-				let ab = await this._peerManager._media.loadFilePartAndReturnAB(this._apiObject, n);
+				let ab = await this._peerManager._media.loadFilePartAndReturnAB(this._apiObject, n, this._peerMessage);
 			// console.error('asked got '+n);
 			// this._partBlobs.push({n: n, blob: blob});
 
@@ -173,7 +190,7 @@ class Streamable {
 		// determine if sw asked for specific part
 		if (this._peerManager._user._protocol._docMessages[this._id]) {
 			downloadingPartN = this._peerManager._user._protocol._docMessages[this._id].partN;
-			console.error('sw asked to '+downloadingPartN);
+			// console.error('sw asked to '+downloadingPartN);
 			delete this._peerManager._user._protocol._docMessages[this._id];
 
 			this._downloadingPartN = downloadingPartN;

@@ -47,11 +47,11 @@ class Album extends AbstractMessage {
 				let loaded = false;
 
 				if (gmi.media.blobURL) {
-					console.error('loading has blob');
+					// console.error('loading has blob');
 					loaded = true;
 					background = "url('"+gmi.media.blobURL+"'),url('"+gmi.media.getPreviewBase64()+"')";
 				} else {
-					console.error('loading has no blob');
+					// console.error('loading has no blob');
 					background = "url('"+gmi.media.getPreviewBase64()+"')";
 				}
 

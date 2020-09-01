@@ -101,7 +101,7 @@ class RightSidebarPoll extends RightSidebarAbstract {
 	}
 
 	afterRender() {
-		console.error('poll afterRender ');
+		// console.error('poll afterRender ');
 	}
 
 	template() {

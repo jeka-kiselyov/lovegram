@@ -20,7 +20,7 @@ class Poll extends AbstractMessage {
 	}
 
 	afterRender() {
-		console.error('aster render');
+		// console.error('aster render');
 		this.nextTick(()=>{
 			this.assignDomEvents();
 			this.updateDOM();
@@ -51,7 +51,7 @@ class Poll extends AbstractMessage {
 			if (this._setVoters.indexOf(user._id) == -1) {
 				html += this.avHTML(user, 'avatarSmall');
 				this._setVoters.push(user._id);
-				console.error(this._setVoters);
+				// console.error(this._setVoters);
 			}
 		}
 
@@ -78,7 +78,7 @@ class Poll extends AbstractMessage {
 				contt.innerHTML = closing.time;
 			}
 			if (closing.percents) {
-				console.error(closing.percents);
+				// console.error(closing.percents);
 				contp.className = 'progress '+('progress'+(100 - (Math.floor(closing.percents / 10) + 1) * 10));
 
 				if (closing.percents < 30) {
@@ -97,7 +97,7 @@ class Poll extends AbstractMessage {
 		if (was) {
 			this._data.poll.fetch()
 				.then(()=>{
-					console.error(this._data.poll);
+					// console.error(this._data.poll);
 					if (this._data.poll._solution) {
 						this._parent.showNotice(this._data.poll._solution, 'lamp');
 					}
@@ -113,12 +113,12 @@ class Poll extends AbstractMessage {
 		}
 	}
 
-	updateDOM() {
+	updateDOM(animate) {
 		if (this._data.poll.isVoted || this._data.poll.isClosed) {
 			this.$('.pollAnswers').classList.add('voted');
 
 			const createPercentAnimator = async (cont, toValue, isValid) => {
-				let initialValue = 0;
+				let initialValue = (animate ? 0 : toValue);
 				do {
 					if (initialValue < toValue) {
 						initialValue++;
@@ -143,7 +143,7 @@ class Poll extends AbstractMessage {
 					if (answer.chosen || answer.correct) {
 						setTimeout(()=>{
 							asc.classList.add('chosen');
-						}, 200);
+						}, (animate ? 200 : 1));
 						asc.innerHTML = AbstractMessage.AppUI.getIconHTML('check');
 					}
 					if (isQuiz && answer.chosen && !answer.correct) {
@@ -153,7 +153,7 @@ class Poll extends AbstractMessage {
 
 					if (!this._animated[domId]) {
 						this._animated[domId] = true;
-						createPercentAnimator(ac.querySelector('.pollAnswerResult'), answer.percents);
+						createPercentAnimator(ac.querySelector('.pollAnswerResult'), answer.percents, animate);
 					}
 				}
 			}
@@ -206,7 +206,7 @@ class Poll extends AbstractMessage {
 
 		this._data.poll.vote(a)
 			.then(()=>{
-				this.updateDOM();
+				this.updateDOM(true);
 			});
 	}
 
@@ -307,7 +307,7 @@ Poll.template = `
 							<div class="pollVoters" id="polv_{{domId}}"></div>
 						</div>
 
-						<div class="pollAnswers {{if (options.poll.isVoted)}}voted{{/if}}" id="pa_{{domId}}">
+						<div class="pollAnswers {{if (options.poll.isVoted)}}voted votedBefore{{/if}}" id="pa_{{domId}}">
 							{{each(options.answers)}}
 							<div class="pollAnswer" id="pa_{{domId}}_{{@this.uniq}}" data-uniq="{{@this.uniq}}">
 								<div class="pollAnswerLeft">

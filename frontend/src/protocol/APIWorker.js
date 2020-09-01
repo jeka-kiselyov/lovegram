@@ -27,6 +27,15 @@ const queryableFunctions = {
 
 	    return null;
 	},
+	currentDC: async function() {
+		try {
+			let state = JSON.parse(storage.state);
+			return parseInt(''+state.current_dc_id, 10);
+		} catch(e) { return null; }
+	},
+	activeNetworkers: async function() {
+		return teleweb.activeNetworkers();
+	},
 	loadImageAndReturnBlobURL: async function(options) {
 		const {url, params} = options;
 
@@ -68,6 +77,10 @@ const queryableFunctions = {
 				return URL.createObjectURL(blob);
 			}
     	} catch(e) {
+    		if (e && e.type && (''+e.type).indexOf('_REFERENCE') != -1) {
+    			// false on file_reference error, null on others
+    			return false;
+    		}
     	}
 
 		return null;

@@ -19,32 +19,60 @@ class MediaManager extends EventTarget {
 		this._downloadPromises = {};
 		this._downloadPromiseResolvers = {};
 
+		///
+		this._serversHeated = {};
+
 		this._webp = new WEBP();
 
 		this._parallelC = this._app._config.get('maxParallelConnections');
 	}
 
+	async getVideoPreview(messageMedia) {
+		const url = './tg/'+messageMedia._id+'_preview.jpg';
+		return await this._user._protocol.matchGetBlob(url);
+	}
+
+	async saveVideoPreview(messageMedia, blob) {
+		const url = './tg/'+messageMedia._id+'_preview.jpg';
+		this._user._protocol.putToCacheAndForget({url: url, binary: blob, lazy: true});
+	}
+
 	async uploadPhoto(bytes, filename) {
+		console.error('uploading photo', bytes, filename);
+
 		let randomFileId = (''+Math.random()).split('.').join('').split('0').join('1');
 		let uploadedParts = 0;
 		let md5 = await this._user._protocol.md5(bytes);
 
-		const options = {
-			"file_id": randomFileId,
-			"file_part": 0,
-			"bytes": []
-		};
+		const currentDC = await this._user._protocol.currentDC();
+
 		const maxPartSize = 512*1024;
 		const fileSize = bytes.length;
+		let promises = [];
 
 		for (let currentPart = 0; currentPart*maxPartSize < fileSize; currentPart++) {
+			const options = {
+				"file_id": randomFileId,
+				"file_part": 0,
+				"bytes": []
+			};
+
 			options.file_part = currentPart;
 			options.bytes = bytes.subarray(currentPart*maxPartSize, (currentPart+1)*maxPartSize);
 
-			const resp = await this._user.invoke('upload.saveFilePart', options);
-			console.warn(resp);
+			const dcId = currentDC + 1000 * (currentPart % this._parallelC + 1);
+			promises.push(this._user.invoke('upload.saveFilePart', options, {dcId: dcId}));
+			// const resp = await this._user.invoke('upload.saveFilePart', options);
+			// console.warn(resp);
+			if (promises.length >= this._parallelC) {
+				await Promise.all(promises);
+				promises = [];
+			}
+
 			uploadedParts++;
 		}
+
+		await Promise.all(promises);
 
 		return {
 			"_": "inputFile",
@@ -101,7 +129,41 @@ class MediaManager extends EventTarget {
 		return out;
 	}
 
-	async loadFilePartAndReturnAB(apiDocument, partN) {
+	async heatServersUp(apiDocument) {
+		let dcId = apiDocument.dc_id;
+		if (this._serversHeated[dcId]) {
+			return;
+		}
+
+		// console.time('heating up servers');
+
+		// establish connections to media servers for this document
+		this._serversHeated[dcId] = true;
+		console.error(dcId);
+
+		let an = await this._user._protocol.activeNetworkers();
+		let conn = false;
+		for (let a of an) {
+			if (a == dcId) {
+				// already connected to it
+				conn = true;
+			}
+		}
+
+		if (!conn) {
+			await this._user.invoke('help.getSupport', {}, {dcId: dcId});
+		}
+
+		let ps = [];
+		for (let i = 1; i <= this._parallelC; i++) {
+			ps.push(this._user.invoke('help.getSupport', {}, {dcId: (1000*i + dcId)}));
+		}
+		await Promise.all(ps);
+
+		// console.timeEnd('heating up servers');
+	}
+
+	async loadFilePartAndReturnAB(apiDocument, partN, peerMessage) {
 		const cacheKey = 'doc_'+apiDocument.id+'_part_'+partN;
 
 		let chunkSize = 512*1024;
@@ -121,10 +183,19 @@ class MediaManager extends EventTarget {
 		options.dcId = apiDocument.dc_id + 1000 * (partN % this._parallelC + 1); // max 3 parallel sockets
 
 		// console.time('Media | invoke_'+cacheKey);
-		const resp = await this._user.invoke('upload.getFile', params, options);
+		let resp = await this._user.invoke('upload.getFile', params, options);
 		// console.timeEnd('Media | invoke_'+cacheKey);
 		// console.error(resp);
 		// console.error(resp.data);
+
+		// console.error(resp, peerMessage);
+
+		if (!resp.success && resp.data.type && resp.data.type.indexOf('FILE_REFERENCE_') != -1 && peerMessage) { // file reference error and we have peerMessage to update it
+			await this.updateFileReferences(peerMessage, apiDocument);
+			params.location.file_reference = apiDocument.file_reference;
+			resp = await this._user.invoke('upload.getFile', params, options);
+		}
+
 		if (resp && resp.data && resp.data.bytes) {
 			// console.time('Media | put_'+cacheKey);
 			// console.error('Media | put_'+cacheKey);
@@ -135,6 +206,8 @@ class MediaManager extends EventTarget {
 			// let blob = await this._user._protocol.putToCacheAndForget({binary: resp.data.bytes, url: './tg/'+cacheKey+'.dat'});
 			// console.timeEnd('Media | put_'+cacheKey);
 			// return blob;
+		} else {
+			console.error(resp);
 		}
 
 		// await new Promise((res)=>{ setTimeout(res, 50000); });
@@ -144,6 +217,8 @@ class MediaManager extends EventTarget {
 
 
 	async loadStickerAndReturn(apiDocument) {
+		// @todo: need to update file_reference here?
+
 		const cacheKey = 'sticker_'+apiDocument.id;
 
 		const params = {
@@ -158,6 +233,8 @@ class MediaManager extends EventTarget {
 			"offset": 0
 		};
 
+		// console.error(params);
+
 		let options = {};
 		options.dcId = apiDocument.dc_id;
 
@@ -170,7 +247,7 @@ class MediaManager extends EventTarget {
 				let binary = await this._user._protocol.loadRaw({url, params: params, options: options, timeout: 5000});
 
 				let png = await this._webp.convert(binary);
-				console.error(png);
+				// console.error(png);
 
 				const response = new Response(png.data, {status: 200, statusText: 'OK', headers: {
 					'Content-Type': 'image/png',
@@ -191,11 +268,49 @@ class MediaManager extends EventTarget {
 			let json = await this._user._protocol.loadFileAndInflate({url: url, params: params, options: options, timeout: 5000});
 			return json;
 		}
-
 	}
 
+	async updateFileReferences(peerMessage, apiObject) {
+		let m = 'messages.getMessages';
+		const params = {};
+		if (peerMessage._peer._type == 'channel') {
+			m = 'channels.getMessages';
+			params.channel =  {
+				"_": "inputChannel",
+				"channel_id": peerMessage._peer._apiObject.id,
+				"access_hash": peerMessage._peer._apiObject.access_hash,
+			};
+		}
 
-	async loadPreviewAndReturnBlobURL(photoApiObject, size) {
+		params.id = [{_: 'inputMessageID', id: peerMessage._id}];
+
+		const resp = await this._user.invoke(m, params);
+		// console.error(resp);
+
+		try {
+			let m = resp.data.messages[0];
+			// let is = ['photo', 'document'];
+			// for (let i of is) {
+			// 	if (m[i] && m[i].file_reference) {
+			// 		apiObject.file_reference = m[i].file_reference;
+			// 		return true;
+			// 	}
+			// }
+			const doTry = (where)=>{
+				if (where && where.file_reference) {
+					apiObject.file_reference = where.file_reference;
+					return true;
+				}
+			}
+			doTry(m.media.photo);
+			doTry(m.media.document);
+			doTry(m.media.webpage.photo);
+		} catch(e) { return false; };
+
+		return false;
+	}
+
+	async loadPreviewAndReturnBlobURL(photoApiObject, size, peerMessage, dcShift) {
 		let cacheKey = 'message_photo_'+photoApiObject.id;
 		if (size) {
 			cacheKey += ('_'+size);
@@ -232,8 +347,17 @@ class MediaManager extends EventTarget {
 		}
 
 		options.dcId = photoApiObject.dc_id;
+		if (dcShift) {
+			// console.error('shifting dc');
+			options.dcId += (1000 * (dcShift % this._parallelC + 1)); // shifting datacenter to media one
+		}
 
 		let blobURL = await this._user._protocol.loadImageAndReturnBlobURL({url: './tg/'+cacheKey+'.jpg', params: params, options: options});
+		if (blobURL === false && peerMessage) { // file reference error and we have peerMessage to update it
+			await this.updateFileReferences(peerMessage, photoApiObject);
+			return await this.loadPreviewAndReturnBlobURL(photoApiObject, size);
+		}
+
 		if (!blobURL) {
 			params.location.thumb_size = 'm';
 			blobURL = await this._user._protocol.loadImageAndReturnBlobURL({url: './tg/'+cacheKey+'.jpg', params: params, options: options});

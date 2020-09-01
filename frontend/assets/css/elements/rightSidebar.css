@@ -487,18 +487,19 @@
 .rswTitle, .rswDesc, .rswUrl {
 	display: block;
 	margin-left: 48px;
-	max-height: 12px;
+	max-height: 18px;
 	overflow: hidden;
 }
 
 .rswTitle {
 	color: #000000;
+	height: 18px;
 	font-weight: bold;
 }
 
 .rswDesc {
 	color: #707579;
-	max-height: 25px;
+	max-height: 29px;
 }
 
 .rswUrl {

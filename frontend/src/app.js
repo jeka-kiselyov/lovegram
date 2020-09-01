@@ -1,4 +1,5 @@
 const AppInterface = require('./ui/AppInterface.js');
+const Router = require('./utils/Router.js');
 // const TestRunner = require('./tests/TestRunner.js');
 
 class App {
@@ -18,6 +19,16 @@ class App {
     	if (this._user._state == 'online') {
     		this.init();
     	}
+
+        this._router = new Router();
+        this._router.on('peerId', (peerId)=>{
+            if (this._user._state == 'online') {
+                // alert(peerId);
+                this._interface.goTo({
+                    peerId: peerId,
+                });
+            }
+        });
 	}
 
     get config() {

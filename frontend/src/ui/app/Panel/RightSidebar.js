@@ -33,8 +33,8 @@ class RightSidebar extends UI {
 		// }
 
 		// setTimeout(()=>{
-		// 	this.showBlock('Stickers');
-		// }, 3500);
+		// 	this.showBlock('GIFs');
+		// }, 1500);
 	}
 
 	onSwipe(dir) {

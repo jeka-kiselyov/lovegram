@@ -17,11 +17,11 @@ class VideoWithText extends AbstractMessage {
 };
 
 VideoWithText.template = `
-			<div id="message_{{message._id}}" data-id="{{message._id}}"
+			<div id="message_{{message._id}}" data-id="{{message._id}}" data-moveaction="heat"
 				class="
 					panelMessage{{if (options.fromMe)}} fromMe{{#else}} fromThem{{/if}} panelMessage{{viewType}}
 					withVideo
-					{{if (options.sameAsNext)}} sameAsNext{{/if}}
+					{{if (options.sameAsNext)}} sameAsNext{{/if}} messageMove
 				"
 				title="{{message._id}}"
 				style="

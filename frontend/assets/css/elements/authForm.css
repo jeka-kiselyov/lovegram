@@ -185,7 +185,7 @@ svg.flip {
 	opacity: 1;
 	display: block;
 	font-size: 14px;
-	top: -5px;
+	top: -7px;
 }
 .input .inputBorder {
 	border: 1px solid #ccc;
@@ -313,4 +313,30 @@ svg.flip {
 		margin: 0;
 	}
 
+}
+
+@media (max-height:500px) {
+	.authForm .info {
+	    height: 40vh;
+	}
+	.logoC {
+		margin: 20px 0 40px 0;
+	}
+	.logo {
+	    height: 75px;
+		transform: scale(0.5);
+		bottom: 0px;
+	}
+	#monkey {
+	}
+	#logoHeader {
+		display: none;
+	}
+	.logo_tg {
+		transform: scale(0.7);
+		bottom: -20px;
+	}
+	#authInputs_wfcode {
+		margin-top: 50px;
+	}
 }

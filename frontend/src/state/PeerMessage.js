@@ -49,6 +49,11 @@ class PeerMessage {
 		}
 	}
 
+	heatServersUp() {
+		let obj = this._doc || this._audio || this._media;
+		(obj && obj.heatServersUp());
+	}
+
 	async doButton(n) {
 		let buttons = this.getButtons();
 		if (buttons[n]) {
@@ -189,7 +194,7 @@ class PeerMessage {
 	}
 
 	addMessageToGroup(peerMessage) {
-		console.error('addMessageToGroup');
+		// console.error('addMessageToGroup');
 
 		if (this._groupMessagesIds[peerMessage._id]) {
 			return this._groupMessagesIds[peerMessage._id];
@@ -322,6 +327,7 @@ class PeerMessage {
 					peerManager: this._peerManager,
 					messageApiObject: messageApiObject,
 					peer: this._peer,
+					peerMessage: this,
 				});
 				storage.push(object);
 				idsStorage[apiObject.id] = object;

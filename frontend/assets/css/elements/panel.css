@@ -511,6 +511,10 @@ video {
 	cursor: pointer;
 }
 
+.fromThem .avatar {
+	cursor: pointer;
+}
+
 .fromMe .messageAuthor {
 	display: none;
 }
@@ -946,6 +950,10 @@ a.messageWebpage {
 	}
 	.panelMessages {
 	    height: calc(100vh - 141px);
+	    padding: 6px;
+	}
+	.panelMessagesFull {
+		height: calc(100vh - 65px);
 	    padding: 6px;
 	}
 }

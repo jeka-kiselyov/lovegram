@@ -24,6 +24,15 @@
 	font-size: 14px;
 }
 
+.verifiedAcc {
+	display: inline-block;
+	vertical-align: bottom;
+	width: 14px;
+	height: 14px;
+	background: top right no-repeat url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAMAAAC6V+0/AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABOUExURUdwTDKo5DOo5TKo5TCv7zCn5zCq5DKn5DKo5DCn5zOo5TKn5DKn5TOn5jOp5jKo5jOo5XzI7j+t5q7d8/j8/Oz3+1i46tLs967c89/x+Vs1RvMAAAAQdFJOUwDQz+AQIDDA8ECwYICgUHBYR1mdAAAAhklEQVQY023QSxbCIBBE0YIgDfH3Ek3U/W/UgQTRUMN7+jRNSVtC0C7R+8O/5QQpN3A0GwDAm10KGk3GHlrBVGWueK12e8wQJSl/7T4BQ5AOCWCqBl6SA+blWQ2nMrour81SqEvXpdjnIWm75ufOoXd895v5NBZ3Zm1TMYHbFRrTuVN9M/YGuy4NFQ659QwAAAAASUVORK5CYII=');
+	background-size: 14px 14px;
+}
+
 .panelMeta .panelInfo {
 	margin-top: 4px;
 	color: #777b7f;
@@ -58,6 +67,11 @@
 .panelSubs, .panelActions {
 	float: right;
     margin: 8px 14px 0 0;
+}
+
+.panelActionsLeft {
+	float: left;
+	margin-left: 14px;
 }
 
 .panelSubs {

@@ -6,7 +6,7 @@ Telegram Developer Challenges JavaScript Contest Entry
 
 [Stage 2](https://entry1289-jsround2.usercontent.dev/) IV PLACE
 
-[Stage 3](https://contest.com/javascript-web-3) TBE
+[Stage 3](https://contest.com/javascript-web-3) III PLACE
 
 The goal was to create a simplified web version of Telegram without using third-party UI frameworks. You can check built version online [here](https://entry1413-jsround3.usercontent.dev/).
 

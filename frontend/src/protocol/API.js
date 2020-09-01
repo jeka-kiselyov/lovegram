@@ -68,7 +68,7 @@ class API extends EventTarget {
 
 			        navigator.serviceWorker.addEventListener('message', event => {
 			        	if (event && event.data) {
-			        		console.error('Media | Message from sw', event.data);
+			        		// console.error('Media | Message from sw', event.data);
 			        		// message from sw - event.data
 			        		// this._mostRecentSWMessage = event.data;
 			        		if (event.data.documentId) {
@@ -132,7 +132,7 @@ class API extends EventTarget {
 
 		const urls = [];
 		const refs = {};
-		console.error('loading cached items', items.length);
+		// console.error('loading cached items', items.length);
 		for (let i = 0; i < items.length; i++) {
 			if (items[i].blobURL) {
 				continue;
@@ -140,6 +140,7 @@ class API extends EventTarget {
 			// console.error('loading cached', items[i]);
 			if (items[i].url !== null) {
 				let url = this.normalizeURL(items[i].url);
+				// console.error(url);
 				urls.push(url);
 				if (!refs[url]) {
 					refs[url] = [];
@@ -220,7 +221,7 @@ class API extends EventTarget {
 
 		let blob = await (response.clone().blob());
 // console.error('here444');
-		await FileCacher.put(url, response);
+		await FileCacher.put(url, response, options.lazy);
 // console.error('here5555');
 
 		return blob;
@@ -277,6 +278,16 @@ class API extends EventTarget {
 		return resp.data;
 	}
 
+	async matchGetBlob(url) {
+		await FileCacher.open(); // @todo: once!
+		let matched = await FileCacher.match(url);
+		if (matched) {
+			const blob = await matched.blob();
+			return blob;
+			// return URL.createObjectURL(blob);
+		}
+	}
+
 	/**
 	 * Invoke API method and cache results. options.max - max lifetime in munutes
 	 * @param  {[type]} method  [description]
@@ -290,12 +301,13 @@ class API extends EventTarget {
 		// console.error('invokeAndCache | '+method);
 
 		let url = '/tg/ch_'+method+'_'+JSON.stringify(params).replace(/[\W_]+/g,"_")+'.json';
-		// console.error('invokeAndCache | '+url);
+		console.error('invokeAndCache | '+url);
 		let matched = await FileCacher.match(url);
 		if (matched) {
-			// console.error('invokeAndCache | matched');
 			let json = await matched.json();
-			if (!json.max || json.max < (new Date).getTime()) {
+			console.error('invokeAndCache | ', json, (new Date).getTime());
+			if (!json.max || json.max > (new Date).getTime()) {
+			console.error('invokeAndCache | matched');
 				return json.data;
 			}
 		}
@@ -318,8 +330,21 @@ class API extends EventTarget {
 	}
 
 	async invoke(method, params = {}, options) {
+		console.error(options);
 		await this.initializeWorker();
 		return await this.callWorker('invoke', {method: method, params: params, options: options});
+	}
+
+	async currentDC() {
+		await this.initializeWorker();
+		const resp = await this.callWorker('currentDC', {});
+		return resp.data;
+	}
+
+	async activeNetworkers() {
+		await this.initializeWorker();
+		const resp = await this.callWorker('activeNetworkers', {});
+		return resp.data;
 	}
 
 	async generateSRP(accountPassword, password) {
@@ -430,7 +455,7 @@ class API extends EventTarget {
 		localStorage.removeItem('apiState');
 		localStorage.removeItem('dialogs');
 
-    	document.location = document.location + '?loggedout';
+    	location.reload();
 	}
 
 }

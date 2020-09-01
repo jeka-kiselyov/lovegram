@@ -112,8 +112,14 @@ class UI extends EventTarget {
 			className = ''+className+' visible';
 		}
 
+		let ds = '';
+		if (peer._authorPeer) { // it's a message
+			ds = 'data-action="gotouser" data-id="'+peer._id+'"';
+			className+=' messageAction';
+		}
+
 		return `
-		<div class="${className} avatar" id="avatar_${this._domId}_${peer._id}" data-id="${peer._id}">
+		<div class="${className} avatar" id="avatar_${this._domId}_${peer._id}" data-id="${peer._id}" ${ds}>
 			${ih}
 		</div>
 		`;

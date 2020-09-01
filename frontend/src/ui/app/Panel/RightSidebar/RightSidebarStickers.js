@@ -71,10 +71,10 @@ class RightSidebarStickers extends RightSidebarAbstract {
 
 		if (active) {
 			let data = await this._peerManager._stickers.getFeatured();
-			console.error('_featured', data);
+			// console.error('_featured', data);
 			if (data && data.sets) {
-				await this._peerManager._stickers.loadRespData(data, 6, (searched)=>{
-			console.error('_featured searched', searched);
+				await this._peerManager._stickers.loadRespData(data, 26, (searched)=>{
+			// console.error('_featured searched', searched);
 
 					this._featured = searched;
 					if (this._data.isLoading) {
@@ -93,6 +93,8 @@ class RightSidebarStickers extends RightSidebarAbstract {
 			// this._data.isLoading = false;
 			// this.render();
 			// console.error(this._data.sets);
+			//
+			this.reinitScrollBar(true);
 		}
 	}
 
@@ -101,20 +103,24 @@ class RightSidebarStickers extends RightSidebarAbstract {
 		let html = '';
 		let ids = [];
 		let updated = false;
-		console.error(this._data);
-		console.error(this._data.sets);
+		// console.error(this._data);
+		// console.error(this._data.sets);
 		for (let set of this._data.sets) {
-			if (ids.length < 6) {
+			if (ids.length < 26) {
 				if (!this._inDOMids[set._id]) {
 					html+=this.getSetHTML(set);
 					this._inDOMids[set._id] = true;
-					console.error('added', set._id);
+					// console.error('added', set._id);
 					updated = true;
 				} else {
 					if (this._slept[set._id] || !this._initsids[set._id]) {
 						this.$('#rssSet_'+set._id).style.display = 'block';
 						delete this._slept[set._id];
-						this._tgss[set._stickers[0]._id] && this._tgss[set._stickers[0]._id].playOnce();
+
+						if (ids.length < 5) {
+							// play animations on visible ones
+							this._tgss[set._stickers[0]._id] && this._tgss[set._stickers[0]._id].playOnce();
+						}
 
 						if (!this._initsids[set._id]) {
 							updated = true;
@@ -146,7 +152,7 @@ class RightSidebarStickers extends RightSidebarAbstract {
 					r++;
 				} else {
 					// remove older stickerset
-					console.error('removing', id);
+					// console.error('removing', id);
 					cont && cont.remove();
 					delete this._inDOMids[id];
 					delete this._initsids[id];
@@ -183,6 +189,7 @@ class RightSidebarStickers extends RightSidebarAbstract {
 		if (await this.sureSingle('tick')) return;
 
 		let fw = 1; // do not run parallel called by default
+		let si = 0;
 		for (let set of this._data.sets) {
 			if (this._inDOMids[set._id] && !this._initsids[set._id] && !this._slept[set._id]) {
 				this._initsids[set._id] = true;
@@ -195,17 +202,17 @@ class RightSidebarStickers extends RightSidebarAbstract {
 							const tgs = new TGS(cont);
 							// console.error('create tgs');
 							this._tgss[set._stickers[i]._id] = tgs;
-							tgs.setJSON(data, true, true, set._stickers[i], (i == 0));
+							tgs.setJSON(data, true, true, set._stickers[i], (i == 0 && si < 5));
 							cont.classList.add('animated');
 							cont.dataset.id = set._stickers[i]._id;
 						} else {
 							cont.style.backgroundImage = "url('"+data+"')";
 						}
-						await new Promise((res)=>setTimeout(res,5));
+						await new Promise((res)=>setTimeout(res, (si < 5 ? 5 : 100) ));
 					} catch(e) { break; }
 
 					if (this._slept[set._id]) {
-						console.error('added animation but goes to sleep', set._id);
+						// console.error('added animation but goes to sleep', set._id);
 						delete this._inDOMids[set._id];
 						delete this._initsids[set._id];
 						delete this._slept[set._id];
@@ -215,14 +222,24 @@ class RightSidebarStickers extends RightSidebarAbstract {
 					}
 				}
 			}
+			si++;
 		}
 
 		this.fulfilSingle('tick',fw,1);
 	}
 
+	reinitScrollBar(forceReInit) {
+		let container = this.$('.rssStickersList');
+		let topContainer = this.$('#rightSidebarStickers');
+
+		if (container && topContainer) {
+			container.style.height = '' +(topContainer.offsetHeight - container.offsetTop) + 'px';
+			this.initScrollBarOn(container, forceReInit);
+		}
+	}
+
 	afterRender() {
-		console.error('stickers afterRender ');
-		// this.reinitScrollBar(true);
+		// console.error('stickers afterRender ');
 		this._inDOMids = {};
 		this._initsids = {};
 		this._slept = {};
@@ -236,11 +253,11 @@ class RightSidebarStickers extends RightSidebarAbstract {
 	}
 
 	async search(q) {
-		console.error('Searched ', q);
+		// console.error('Searched ', q);
 		this._lastSearch = q;
 
 		if (!q) {
-			console.error('disp _featured');
+			// console.error('disp _featured');
 			this._data.sets = this._featured;
 			this.updateDom();
 			return clearTimeout(this._searchTimeout);
@@ -253,8 +270,8 @@ class RightSidebarStickers extends RightSidebarAbstract {
 		}
 
 		let data = await this._peerManager._stickers.search(q);
-		console.error(data);
-		console.error(this._lastDataWithResults);
+		// console.error(data);
+		// console.error(this._lastDataWithResults);
 		try {
 			if (!data.sets.length) {
 				data = this._lastDataWithResults;
@@ -264,7 +281,7 @@ class RightSidebarStickers extends RightSidebarAbstract {
 		} catch(e) {
 			data = this._lastDataWithResults;
 		}
-		console.log('p', data);
+		// console.log('p', data);
 
 		if (this._searchTimeout) {
 			clearTimeout(this._searchTimeout);
@@ -272,7 +289,7 @@ class RightSidebarStickers extends RightSidebarAbstract {
 		this._searchTimeout = setTimeout(async()=>{
 			if (data) {
 				await this._peerManager._stickers.loadRespData(data, 6, (searched)=>{
-					console.error('searched', searched)
+					// console.error('searched', searched)
 					this._cachedSearched[q] = searched;
 					if (searched.length && q == this._lastSearch) {
 						this._data.sets = searched;

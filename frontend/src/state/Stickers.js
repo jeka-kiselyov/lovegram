@@ -188,7 +188,7 @@ class Stickers extends EventTarget {
 				if (apiSet.set) apiSet = apiSet.set;
 				if (retIds[apiSet.id]) continue;
 
-				console.error('featured', apiSet);
+				// console.error('featured', apiSet);
 
 				try {
 					if (this._stickerSetsIds[apiSet.id]) {

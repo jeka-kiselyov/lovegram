@@ -15,8 +15,9 @@
     "livereload": "^0.8.2",
     "lovacli": "^0.1.15",
     "mime-types": "^2.1.24",
+    "squirrelly": "^7.7.0",
     "perfect-scrollbar": "^1.5.0",
-    "teleweb": "^0.2.2"
+    "teleweb": "^0.2.3"
   },
   "devDependencies": {
     "grunt": "^1.0.4",

@@ -38,7 +38,7 @@ class EmojiDialog extends AppUI {
 		this.isVisible = false; // just getter, we need to know if it's visible to initialize tgs animations only when it is.
 
 		// setTimeout(()=>{
-		// 	this.show(500,500)
+		// 	this.show(500,800)
 		// },500);
 	}
 
@@ -111,14 +111,23 @@ class EmojiDialog extends AppUI {
 			if (t !== what) this._components[t].hidden();
 			// this.$('.emojiNavItemstickers').classList['add']('active')
 		});
-		this.$$('.emojiNavItem').forEach((i)=>{ i.classList[(i.dataset.what == what ? 'add' : 'remove')]('active'); });
+		// this.$$('.emojiNavItem').forEach((i)=>{ i.classList[(i.dataset.what == what ? 'add' : 'remove')]('active'); });
+		this.$('#search').classList[(what == 'emoji' ? 'remove' : 'add')]('active');
 		this._components[what].show();
 	}
 
 	onSearch() {
-		this._parent._components.RightSidebar.showBlock('Stickers');
-		this._parent._components.RightSidebar.show();
-		this.hide();
+		if (this._data.what == 'stickers') {
+			this._parent._components.RightSidebar.showBlock('Stickers');
+			this._parent._components.RightSidebar.show();
+			this.hide();
+		} else {
+			if (this.$('#search').classList.contains('in')) {
+				this._components.gifs.showSearch(false);
+			} else {
+				this._components.gifs.showSearch(true);
+			}
+		}
 	}
 
 	onNavClick(e) {
@@ -150,13 +159,14 @@ EmojiDialog.template = `
 						</div>
 
 						<div class="emojiNav">
-							<div class="emojiNavItem emojiNavItemLeft" data-what="stickers" id="search">{{component(options.components.icons.search)}}{{/component}}</div>
+							<div class="emojiNavItem emojiNavItemLeft" id="search">{{component(options.components.icons.search)}}{{/component}}</div>
 							<div class="emojiNavBlocks" id="emojiNavBlocks">
 								<div class="emojiNavItem" data-what="emoji">{{component(options.components.icons.smile)}}{{/component}}</div>
 								<div class="emojiNavItem" data-what="stickers">{{component(options.components.icons.stickers)}}{{/component}}</div>
 								<div class="emojiNavItem" data-what="gifs">{{component(options.components.icons.gifs)}}{{/component}}</div>
 							</div>
 						</div>
+
 					</div>
 					<div class="emojiOver">
 

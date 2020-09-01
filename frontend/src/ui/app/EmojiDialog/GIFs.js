@@ -1,4 +1,5 @@
 const EmojiDialogItem = require('./EmojiDialogItem.js');
+const SearchBox = require('../LeftSidebar/SearchBox.js');
 
 class GIFs extends EmojiDialogItem {
 	constructor(params) {
@@ -7,9 +8,6 @@ class GIFs extends EmojiDialogItem {
 		this._itemHeight = 105; // 100 + 5 padding
 		this._minWidth = 50;
 		this._maxWidth = 250;
-
-		this._overflowBefore = 0;
-		this._overflowAfter = 0;
 
 		this._lastOffsetY = null;
 		this._overflowFirstItemI = null;
@@ -24,6 +22,54 @@ class GIFs extends EmojiDialogItem {
 		this._loadedToPlay = {};
 
 		this._slept = {};
+
+		this._items = [];
+
+		this._components.SearchBox = this.newC(SearchBox);
+		this._componentEvents = [
+			['search', 'SearchBox', 'onSearch'],
+		];
+	}
+
+	searchOver(on) {
+		this.$('.gifSearchOver').classList[(on ? 'remove' : 'add')]('notvis');
+		clearTimeout(this._soT);
+		if (on) {
+			this.$('.gifSearchOver').classList.remove('hidden');
+		} else {
+			this._soT = setTimeout(()=>{
+				this.$('.gifSearchOver').classList.add('hidden');
+			}, 1000);
+		}
+	}
+
+	onSearch(q) {
+		if (q) {
+		} else {
+			this._components.SearchBox.setActive(false);
+			this.showSearch(false);
+		}
+
+		this.searchOver(true);
+		clearTimeout(this._sTimeout);
+		this._sTimeout = setTimeout(()=>{
+			if (q) {
+				this.search(q);
+			} else {
+				this.restore();
+			}
+		}, 200);
+	}
+
+	showSearch(show) {
+		this.$('.gifSearch').classList[(show ? 'add':'remove')]('active');
+		this._components.SearchBox.setActive(true);
+		if (show && !this.isTouchDevice()) {
+			this._components.SearchBox.focus();
+		}
+
+		// console.error(this.$().closest('.emojiBubble'))
+		this.$().closest('.emojiBubble').querySelector('#search').classList[(show ? 'add' : 'remove')]('in');
 	}
 
 	show() {
@@ -34,7 +80,7 @@ class GIFs extends EmojiDialogItem {
 		const base = this.$('#gifsList');
 		let closest = e.target.closest('.gif');
 		if (closest && base.contains(closest)) {
-			const items = this._app._peerManager._gifs._gifs;
+			const items = this._items;
 			for (let item of items) {
 				if (item._id == closest.dataset.id) {
 					this._parent._parent._components.Panel.onGIF(item);
@@ -44,6 +90,80 @@ class GIFs extends EmojiDialogItem {
 		}
 	}
 
+	clean() {
+		this._lastOffsetY = null;
+		this._overflowFirstItemI = null;
+		this._overflowLastItemI = null;
+		this._containerHeight = 373;
+
+		this._lastScrollTime = new Date();
+
+		this._lastItemToDisplay = null;
+
+		for (let i = 0; i < this._items.length; i++) {
+			this.freeze(i);
+		}
+
+		this._visibleItems = {};
+		this._loadedToPlay = {};
+
+		this._slept = {};
+
+		this.searchOver(false);
+	}
+
+	async restore() {
+		this._items = this._app._peerManager._gifs._gifs;
+		for (let item of this._items) {
+			item.tagSet = false;
+		}
+
+		this.clean();
+
+		this.calcItemsPoss();
+		this.$('.gifsOverflowItems').innerHTML = '';
+		this.setItems();
+
+
+		this.$('.gifsOverflowItems').scrollTop = 5;
+	}
+
+	async search(q) {
+		this._items = await this._app._peerManager._gifs.search(q);
+
+		this.clean();
+
+		this.calcItemsPoss();
+		this.$('.gifsOverflowItems').innerHTML = '';
+		this.setItems();
+
+
+		this.$('.gifsOverflowItems').scrollTop = 5;
+		// this.initScrollbar();
+	}
+
+	async searchMore() {
+		if (!this._app._peerManager._gifs._hasMore || this._searchingMore) return;
+
+		this._searchingMore = true;
+		let more = await this._app._peerManager._gifs.search(null, true);
+		let html = '';
+		for (let it of more) {
+			this._items.push(it); // @todo: merge faster
+		}
+		this.calcItemsPoss();
+		for (let i = 0; i < this._items.length; i++) {
+			let it = this._items[i];
+			if (it.pos && i > this._lastItemToDisplay) {
+				html+=`<div class="gif" id="gif_${it._id}" data-id="${it._id}" style="width: ${it.pos.width};"><div class="cssload-zenith onDark videoLoading"></div></div>`;
+				this._lastItemToDisplay = i;
+			}
+		}
+		this.$('#clearGif').insertAdjacentHTML('beforebegin', html);
+
+		this._searchingMore = false;
+	}
+
 	async init() {
 		if (await this.sureSingle('init')) return false;
 
@@ -51,6 +171,7 @@ class GIFs extends EmojiDialogItem {
 		// this._peerManager._user._protocol.on('sw', (data)=>{
 		// 	this.asked(data);
 		// });
+		this._items = this._app._peerManager._gifs._gifs;
 		this.calcItemsPoss();
 
 		this._events = [
@@ -65,6 +186,7 @@ class GIFs extends EmojiDialogItem {
 
 		this.setItems();
 		this.initScrollbar();
+		this.searchOver(false);
 		this.fulfilSingle('init', true);
 	}
 
@@ -77,7 +199,7 @@ class GIFs extends EmojiDialogItem {
 	}
 
 	async calcItemsPoss() {
-		const items = this._app._peerManager._gifs._gifs;
+		const items = this._items;
 		let y = 0;
 
 		const sI = (i, y, width) => {
@@ -112,7 +234,7 @@ class GIFs extends EmojiDialogItem {
 	}
 
 	async setItems(offsetY) {
-		const items = this._app._peerManager._gifs._gifs;
+		const items = this._items;
 		const cont = this.$('.gifsOverflowItems');
 
 		const inView = (item)=>{
@@ -131,11 +253,11 @@ class GIFs extends EmojiDialogItem {
 						(this._overflowFirstItemI == null) && (this._overflowFirstItemI = i);
 						this._overflowLastItemI = i;
 					} else {
-						this._lastItemToDisplay = items[i];
+						this._lastItemToDisplay = i;
 					}
 				}
 			}
-			cont.innerHTML = html + "<div style='clear:both'></div>";
+			cont.innerHTML = html + "<div id='clearGif' style='clear:both'></div>";
 			this.setItems(200);
 			this.setItems(1);
 		} else {
@@ -172,6 +294,11 @@ class GIFs extends EmojiDialogItem {
 						if (inView(items[i])) {
 							if (newfirst == null) newfirst = i; // change to Infinity if uncomment above
 							newlast = i;
+
+							if (i == this._lastItemToDisplay) {
+								// we are showing the last one visible in set, so if we are in search - lets load more
+								this.searchMore();
+							}
 						}
 					}
 				// }
@@ -217,7 +344,7 @@ class GIFs extends EmojiDialogItem {
 	}
 
 	async freeze(i) {
-		let item = this._app._peerManager._gifs._gifs[i];
+		let item = this._items[i];
 
 		const cont = this.$('#gif_'+item._id);
 		delete this._visibleItems[item._id];
@@ -238,9 +365,9 @@ class GIFs extends EmojiDialogItem {
 	}
 
 	async sleep(i) {
-		console.error('sleep'+i);
+		// console.error('sleep'+i);
 		this._slept[i] = true;
-		let item = this._app._peerManager._gifs._gifs[i];
+		let item = this._items[i];
 		delete this._visibleItems[item._id];
 		if (item.tagSet) {
 			item.tagSet.pause();
@@ -249,11 +376,13 @@ class GIFs extends EmojiDialogItem {
 	}
 
 	async wakeup(i) {
-		let item = this._app._peerManager._gifs._gifs[i];
+		let item = this._items[i];
 		delete this._slept[i];
 
 		if (!item.tagSet) {
+			// console.log(item._id);
 			const cont = this.$('#gif_'+item._id);
+			// console.log(cont);
 			if (!item.cBlobUrlSet) {
 				const b64 = item.getPreviewBase64();
 				(b64 && (cont.style.backgroundImage = "url('"+b64+"')"));
@@ -326,13 +455,13 @@ class GIFs extends EmojiDialogItem {
 	// }
 
 	async tick() {
-		console.error('tick');
+		// console.error('tick');
 		if (await this.sureSingle('tick')) return;
-		console.error('tick run');
+		// console.error('tick run');
 
 		let promises = [];
 		do {
-			console.error('asked tick');
+			// console.error('asked tick');
 			promises = [];
 			for (let key in this._visibleItems) {
 				if (this._visibleItems[key]._isDownloaded) {
@@ -340,7 +469,7 @@ class GIFs extends EmojiDialogItem {
 				} else {
 					if (!this._loadedToPlay[key]) {
 						// prioritize not loaded
-						console.error('gif downloading', key);
+						// console.error('gif downloading', key);
 						promises.push(this._visibleItems[key].downloadNextPart());
 					}
 					// do {
@@ -350,9 +479,9 @@ class GIFs extends EmojiDialogItem {
 				}
 				if (promises.length > 1) break; // 2 in parallel
 			}
-			console.error('promises start');
+			// console.error('promises start');
 			await Promise.all(promises);
-			console.error('promises start 2');
+			// console.error('promises start 2');
 		} while(promises.length);
 
 		this.fulfilSingle('tick', true, true); // can run again
@@ -363,17 +492,21 @@ class GIFs extends EmojiDialogItem {
 GIFs.template = `
 		{{if (options.initialized)}}
 		<div class="gifsList active emojiScroll" id="gifsList">
-			<div class="gifsOveflow" id="gifsOveflowBefore"></div>
 			<div class="gifsOverflowItems">
 
 			</div>
-			<div class="gifsOveflow" id="gifsOveflowAfter"></div>
 		</div>
+		<div class="gifSearchOver"></div>
 		{{#else}}
 		<div class="appLoading">
 			<div class="cssload-zenith dark"></div>
 		</div>
 		{{/if}}
+		<div class="gifSearch">
+			<div class="gifSearchCont">
+				{{component(options.components.SearchBox)}}{{/component}}
+			</div>
+		</div>
 		`;
 
 module.exports = GIFs;

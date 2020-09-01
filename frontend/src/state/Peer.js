@@ -88,6 +88,7 @@ class Peer extends PeerScroller {
 		this._fullInfo = {};
 
 		this._makeReadyPromiseResolver = null;
+		this._isReady = false;
 
 		this._hasAvatar = null;
 		this._avatarBlobURL = null;
@@ -107,6 +108,7 @@ class Peer extends PeerScroller {
 		// this._ignore = false;
 
 		this._makeReadyPromiseResolver();
+		this._isReady = true;
 	}
 
 	async subscribe(subs) {
@@ -136,10 +138,14 @@ class Peer extends PeerScroller {
 	}
 
 	isArchived() {
-		return (this._folderId == 1); // @todo!!!!! Archived is probably not 1 always
+		return (this._folderId == 1);
 	}
 
 	async toggleDialogArchived(archived) {
+		if (!this._apiObject.pFlags) {
+			this._apiObject.pFlags = {};
+		}
+		this._apiObject.pFlags.pinned = false;
 		if (this.isArchived()) {
 			this._peerManager._folders[1].removePeer(this);
 		} else {
@@ -212,6 +218,7 @@ class Peer extends PeerScroller {
 
 		let isUpdated = false;
 		if (updateObject._ == 'folderPeer') {
+			console.error('updaing folder 2');
 			this._folderId = updateObject.folder_id;
 			isUpdated = true;
 		}
@@ -531,8 +538,8 @@ class Peer extends PeerScroller {
 	// }
 
 	async loadPreviewsFromCache() {
-		console.time('loadPreviewsFromCache');
-		console.time('loadAvatarsFromCache');
+		// console.time('loadPreviewsFromCache');
+		// console.time('loadAvatarsFromCache');
 		// console.error((new Date).getTime(), 'Peer | loadPreviewsFromCache');
 
 		// first step - get messages avatars
@@ -562,8 +569,8 @@ class Peer extends PeerScroller {
 			}
 
 		}
-		console.log('cache avatars: '+users.length, users);
-		console.timeEnd('loadAvatarsFromCache');
+		// console.log('cache avatars: '+users.length, users);
+		// console.timeEnd('loadAvatarsFromCache');
 
 
 		// @todo: group to one call
@@ -579,7 +586,7 @@ class Peer extends PeerScroller {
 		// for (let w of this._stickers) {
 		// 	console.error(w.cached);
 		// }
-		console.timeEnd('loadPreviewsFromCache');
+		// console.timeEnd('loadPreviewsFromCache');
 	}
 
 	async getFullInfo() {
@@ -717,6 +724,7 @@ class Peer extends PeerScroller {
 
 	async sendFiles(filesData, caption = '') {
 		const inputMedias = [];
+		// console.error('uploading filesData', filesData);
 
 		let hasDocs = false;
 		for (let file of filesData) {
@@ -737,7 +745,6 @@ class Peer extends PeerScroller {
 				inputMedias.push({"_": "inputMediaUploadedPhoto", "file":inputFile});
 				// this._peerManager._user.invoke('messages.sendMedia', params);
 			} else if (file.type == 'video') {
-				let inputFile = await this._peerManager._media.uploadPhoto(bytes, file.filename);
 				let attributes = [{
 					"_": "documentAttributeVideo",
 					"flags": true,
@@ -749,7 +756,6 @@ class Peer extends PeerScroller {
 				}];
 				inputMedias.push({"_": "inputMediaUploadedDocument", "file":inputFile, "mime_type":'video/mp4', "attributes": attributes});
 			} else if (file.type == 'doc' || file.type == 'voice') {
-				let inputFile = await this._peerManager._media.uploadPhoto(bytes, file.filename);
 				// let attributes = [];
 				let attributes = [{
 					"_": "documentAttributeFilename",
@@ -1018,6 +1024,66 @@ class Peer extends PeerScroller {
 
 	sortMessages() {
 		this._messages.sort((a,b) => (a._id > b._id) ? 1 : ((b._id > a._id) ? -1 : 0));
+	}
+
+	async getDaysMessages(month, year, cb) {
+		let daysInMonth = 32 - new Date(year, month, 32).getDate();
+		let days = [];
+		let curTime = new Date() / 1000;
+
+		const doSplit = async (fromI, toI, rec)=>{
+			let from = days[fromI].from;
+			let fromD = from.getTime() / 1000;
+			let to = days[toI].to;
+
+			// console.error('checking ', fromI, toI, from, to);
+			const options = {
+				peer: this.getInputPeerObject(),
+				// min_date: (from.getTime() / 1000),
+				offset_date: (to.getTime() / 1000),
+				limit: 15,
+			};
+
+			let resp = await this._peerManager._user._protocol.invokeAndCache('messages.getHistory', options,{max: 999990});
+			let lastDayI = null;
+			if (resp.messages) {
+				for (let m of resp.messages) {
+					let d = new Date(m.date * 1000);
+					console.log(d);
+					if (d.getTime()/1000 < fromD) { if (cb) { cb(days); }  return; }
+					let dayI = d.getDate() - 1;
+					days[dayI].has = true;
+					days[dayI].id = m.id;
+					lastDayI = dayI;
+				}
+			}
+
+			if (cb) { cb(days); }
+
+			// console.error('lastDayI', lastDayI);
+			// console.error('resp.data.messages.length', resp.data.messages.length);
+			if (lastDayI && lastDayI != fromI && resp.messages.length == options.limit) {
+				if (rec < 30)
+				await doSplit(fromI, lastDayI - 1, rec+1);
+			}
+			// console.error(resp);
+		};
+
+		for (let i = 1; i <= daysInMonth; i++) {
+			days.push({
+				from: new Date(year, month, i, 0, 0),
+				to: new Date(year, month, i+1, 0, -1),
+				has: false,
+				id: null,
+			});
+		}
+
+		// await Promise.all([doSplit(15, days.length -1, 1), doSplit(0, 14, 1)]);
+		await doSplit(0, days.length -1, 1);
+
+		// console.error(days);
+
+		return days;
 	}
 
 	async loadElements(params) {
@@ -1295,6 +1361,7 @@ class Peer extends PeerScroller {
 		} catch(e) {}
 
 		if (apiObject.folder_id) {
+			// console.error('updating folder');
 			this._folderId = apiObject.folder_id;
 		} else if (this._folderId && apiObject._ == 'dialog') {
 			this._folderId = null;
@@ -1412,7 +1479,7 @@ class Peer extends PeerScroller {
 			this._oldestMessageId = peerMessage._id;
 		}
 
-
+		let wasUnread = this._unreadCount;
 		if (peerMessage._date > this._mostRecentMessageDate) {
 			this._mostRecentMessageDate = peerMessage._date;
 			this._mostRecentMessage = peerMessage;
@@ -1428,16 +1495,23 @@ class Peer extends PeerScroller {
 			this.emit('update');
 		}
 
-		setTimeout(()=>{
-			this._peerManager.emit('unreadCount', {peer: this});
-		}, 100);
+		if (wasUnread != this._unreadCount) {
+			clearTimeout(this._unreadTimeout);
+			this._unreadTimeout = setTimeout(()=>{
+				this._peerManager.emit('unreadCount', {peer: this});
+			}, 100);
+		}
+
 
 		return peerMessage;
 	}
 
 	markAsRead(onCloudToo) {
 		this._unreadCount = 0;
+
+		// console.error('this._unreadCount', this._unreadCount);
 		this._peerManager.emit('unreadCount', {peer: this});
+
 
 		if (onCloudToo) {
 			/// mark as read on server
@@ -1471,8 +1545,13 @@ class Peer extends PeerScroller {
 			// > 1 day
 			return ('0'+date.getHours()).substr(-2)+':'+('0'+date.getMinutes()).substr(-2);
 		} else {
-			return ''+Peer.monthesNames[date.getMonth()]+' '+date.getDate();
+			return ''+Format.monthsNames[date.getMonth()]+' '+date.getDate();
 		}
+	}
+
+	getDisplayNameWB() {
+		let verified = (this._apiObject.pFlags && this._apiObject.pFlags.verified);
+		return (''+this.getDisplayName()).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+(verified ? ' <span class="verifiedAcc"></span>' : '');
 	}
 
 	getDisplayName() {
@@ -1498,7 +1577,6 @@ class Peer extends PeerScroller {
 	}
 }
 
-Peer.monthesNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 Peer.cTime = (new Date().getTime() / 1000);
 
 module.exports = Peer;

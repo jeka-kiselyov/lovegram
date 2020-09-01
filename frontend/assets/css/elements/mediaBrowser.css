@@ -11,6 +11,7 @@
 	opacity: 1;
 	transition: all .5s ease;
 	z-index: 99999;
+	touch-action: none;
 }
 
 .mediaBrowserOverlay.active {
@@ -90,17 +91,32 @@
 	float: right;
 	padding: 14px;
 	cursor: pointer;
+	width: 24px;
+	height: 24px;
 }
 
 .mbpIcon path {
 	fill: #8c8c8c;
 	transition: all .5s ease;
 }
+/*
+.mbpIcon .cssload-zenith {
+	border-color: transparent #8c8c8c #8c8c8c #8c8c8c;
+}*/
 
 .mbpIcon:hover path {
 	fill: #ffffff;
 }
 
+.mbpIcon .mbpIconAn {
+	position: absolute;
+	opacity: 0;
+	transition: all .5s ease;
+}
+
+.mbpIconAn.active {
+	opacity: 1;
+}
 
 
 

@@ -1,4 +1,6 @@
 
+alert('remove me');
+
 const RightSidebarAbstract = require('./RightSidebarAbstract.js');
 const SearchBlock = require('../../LeftSidebar/SearchBlock.js');
 

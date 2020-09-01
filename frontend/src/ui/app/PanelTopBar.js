@@ -4,6 +4,7 @@ const AppUI = require('../../utils/AppUI.js');
 const SearchBox = require('./LeftSidebar/SearchBox.js');
 const Menu = require('./utils/Menu.js');
 const Icon = window.classes.Icon;
+const SearchCalendar = require('./Panel/SearchCalendar.js');
 
 class PanelTopBar extends AppUI {
 	constructor(params) {
@@ -23,10 +24,12 @@ class PanelTopBar extends AppUI {
 			['click', 'ptpClose', 'onAudioClose'],
 			['click', 'panelMore', 'onBurger'],
 
+			['click', 'sccCal', 'onCal'],
 			['click', 'sccPrev', 'prevSearch'],
 			['click', 'sccNext', 'nextSearch'],
 		];
 
+		this._components['SearchCalendar'] = this.newC(SearchCalendar);
 		this._components['SubsButton'] = this.newC(Button, {title: 'Subscribe', loadingTitle: 'Subscribing...'});
 		this._components['BackIcon'] = this.newC(AppIcon, {icon: 'back'});
 		this._components['SearchIcon'] = this.newC(AppIcon, {icon: 'search'});
@@ -37,6 +40,7 @@ class PanelTopBar extends AppUI {
 
 		this._components.IconDown = this.newC(Icon, {flip: true});
 		this._components.IconUp = this.newC(Icon);
+		this._components.IconCal = this.newC(AppIcon, {icon: 'calendar'});
 
 		this._components['Menu'] = this.newC(Menu, {items: [['search', 'search', 'Search'], ['mute', 'muted', 'Mute']]});
 
@@ -44,6 +48,7 @@ class PanelTopBar extends AppUI {
 			['click', 'SubsButton', 'onSubs'],
 			['search', 'Menu', 'onStartSearch'],
 			['search', 'SearchBox', 'onSearch'],
+			['messageId', 'SearchCalendar', 'onCalendarMessage'],
 		];
 
 		this._data.peer = params.peer || null;
@@ -94,6 +99,11 @@ class PanelTopBar extends AppUI {
 		// this._avatarsMemoryC = {};
 	}
 
+
+	onCalendarMessage(messageId) {
+		this._parent._components.Panel.jumpToMessage(messageId);
+	}
+
 	/**
 	 * Push avatar dom element to dom memory, so we can reuse it as soon as we want to update top bar
 	 */
@@ -109,6 +119,10 @@ class PanelTopBar extends AppUI {
 		}
 	}
 
+	onCal() {
+		this._components.SearchCalendar.show({peerManager: this._peerManager});
+	}
+
 	onBurger(e) {
 		this._components.Menu.show(e);
 	}
@@ -117,6 +131,12 @@ class PanelTopBar extends AppUI {
 		if (['left', 'right'].indexOf(dir) == -1 || this.$().classList.contains('invisible')) {
 			return;
 		}
+		// check if emoji dialog is visible
+		//
+		if (this._app._interface._components.EmojiDialog.isVisible) {
+			return true;
+		}
+
 		if (dir == 'right') {
 			this._parent.showDialogs();
 			return true;
@@ -288,7 +308,7 @@ class PanelTopBar extends AppUI {
 
 		if (this._data.peer) {
 			// update
-			this.$('.panelTitle').innerHTML = this.escapeHTML(peer.getDisplayName());
+			this.$('.panelTitle').innerHTML = peer.getDisplayNameWB();
 			let infoString = peer.getInfoString();
 			this.$('.panelInfo').innerHTML = this.escapeHTML(infoString);
 			this.$('.panelInfo').classList[((infoString == 'online') ? 'add' : 'remove')]('panelInfoOnline');
@@ -326,7 +346,7 @@ class PanelTopBar extends AppUI {
 		peer.getFullInfo()
 			.then(()=>{
 				this.updateInfo();
-				this.$('.panelTitle').innerHTML = this.escapeHTML(peer.getDisplayName());
+				this.$('.panelTitle').innerHTML = peer.getDisplayNameWB();
 			});
 		// peer.on('info', ()=>{
 		// 		this.updateInfo();
@@ -347,7 +367,7 @@ class PanelTopBar extends AppUI {
 						{{self.avHTML(options.peer, 'panelTopAvatar avatarMedium')|safe}}
 					</div>
 					<div class="panelMeta" id="panelMeta">
-						<div class="panelTitle">{{peer.getDisplayName()}}</div>
+						<div class="panelTitle">{{peer.getDisplayNameWB()|safe}}</div>
 						{{js(options.infoString = options.peer.getInfoString())/}}
 						<div class="panelInfo {{if (options.infoString == 'online')}}panelInfoOnline{{/if}}">{{infoString}}</div>
 					</div>
@@ -388,6 +408,9 @@ class PanelTopBar extends AppUI {
 				</div>
 				<div class="searchControl">
 				<div class="panelPos searchControlCont {{if (options.sidebarIsClosed)}}panelNoSidebar{{/if}}">
+					<div class="panelActions panelActionsLeft">
+						<div class="panelIcon inactive" id="sccCal">{{component(options.components.IconCal)}}{{/component}}</div>
+					</div>
 					<div class="sccInfo">
 
 					</div>
@@ -397,6 +420,8 @@ class PanelTopBar extends AppUI {
 					</div>
 				</div>
 				</div>
+
+				{{component(options.components.SearchCalendar)}}{{/component}}
 			{{/if}}
 		`;
 	}

@@ -66,7 +66,7 @@ class MediaBrowser extends UI {
 		}
 		if (this._mbCs.current) {
 			this._mbCs.current.onResize();
-			this._mbCs.current.animateGo();
+			this._mbCs.current.animateGo(true);
 		}
 	}
 
@@ -85,6 +85,9 @@ class MediaBrowser extends UI {
 			}
 			if (e.keyCode == 39) {
 				this.onNext();
+			}
+			if (e.keyCode == 32 && this._mbCs.current.onPlayClick) {
+				this._mbCs.current.onPlayClick();
 			}
 		}
 	}
@@ -118,8 +121,12 @@ class MediaBrowser extends UI {
 		}
 	}
 
-	doDownload() {
-		this._currentMedia.save();
+	async doDownload() {
+		this.$('#downloadOn').classList.add('active');
+		this.$('#downloadOff').classList.remove('active');
+		await this._currentMedia.save();
+		this.$('#downloadOn').classList.remove('active');
+		this.$('#downloadOff').classList.add('active');
 	}
 
 	onIcon(e) {
@@ -147,12 +154,14 @@ class MediaBrowser extends UI {
 	}
 
 	show(params) {
-		console.error(params);
+		// console.error(params);
 
 		this.$('#mediaBrowserTop').style.display = 'block';
 		this.$('.mediaBrowserOverlay').classList.add('active');
 
 		document.addEventListener("keydown", this._documentKeyPressHandler);
+
+		// this._app._interface.setSwipes(false);
 
 		this.initMBCs(params);
 		this.isVisible = true;
@@ -172,6 +181,7 @@ class MediaBrowser extends UI {
 		setTimeout(()=>{
 			this.$('.mediaBrowserOverlay').classList.remove('fading');
 			this.$('#mediaBrowserTop').style.display = 'none';
+			// this._app._interface.setSwipes(true);
 		}, 500);
 	}
 
@@ -311,7 +321,7 @@ class MediaBrowser extends UI {
 		// 	this._mbCs.prev = null;
 		// }
 
-		console.error('prevnext', this._mbCs.prev ? this._mbCs.prev._media._id : 'no', this._mbCs.current._media._id, this._mbCs.next ? this._mbCs.next._media._id : 'no')
+		// console.error('prevnext', this._mbCs.prev ? this._mbCs.prev._media._id : 'no', this._mbCs.current._media._id, this._mbCs.next ? this._mbCs.next._media._id : 'no')
 	}
 
 	repositionArrows() {
@@ -453,6 +463,9 @@ class MediaBrowser extends UI {
 	}
 };
 
+
+							// <div class="mbpIcon" data-action="download">{{component(options.components.IconDownload)}}{{/component}}</div>
+
 MediaBrowser.template = `
 			<div id="mediaBrowserTop" style="display: none;">
 				<div class="mediaBrowserOverlay" id="mediaOverlay">
@@ -461,7 +474,10 @@ MediaBrowser.template = `
 						<div class="mbPanelIcons" id="mbPanelIcons">
 							<div class="mbpIcon mbpIconClose" data-action="close">{{component(options.components.IconClose)}}{{/component}}</div>
 							<div class="mbpIcon" data-action="forward">{{component(options.components.IconForward)}}{{/component}}</div>
-							<div class="mbpIcon" data-action="download">{{component(options.components.IconDownload)}}{{/component}}</div>
+							<div class="mbpIcon" data-action="download">
+								<div class="mbpIconAn" id="downloadOn"><div class="cssload-zenith"></div></div>
+								<div class="mbpIconAn active" id="downloadOff">{{component(options.components.IconDownload)}}{{/component}}</div>
+							</div>
 						</div>
 
 						<div class="mbPanelAbout">

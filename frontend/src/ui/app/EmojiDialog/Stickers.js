@@ -11,7 +11,9 @@ class Stickers extends EmojiDialogItem {
 	send(sticker) {
 		this._parent._parent._components.Panel.onSticker(sticker);
 		this.addStickerToRecent(sticker);
-		this._parent.hide();
+		if (this.isTouchDevice()) {
+			this._parent.hide();
+		}
 	}
 
 	onStickerClick(e) {
@@ -23,7 +25,7 @@ class Stickers extends EmojiDialogItem {
 
 		if (closest && base.contains(closest)) {
 			let sticker = this._app._peerManager._stickers._stickersIds[closest.dataset.id];
-			console.error(sticker);
+			// console.error(sticker);
 			(sticker && this.send(sticker));
 
 			// if (closest.dataset.set == 'Recent') {
@@ -112,11 +114,11 @@ class Stickers extends EmojiDialogItem {
 		// await this._app._peerManager._stickers.getAllStickers();
 
 		let recent = await this._app._peerManager._stickers.getRecent();
-		console.error(recent);
+		// console.error(recent);
 
-		console.error(1);
-		console.error(2);
-		console.error(3);
+		// console.error(1);
+		// console.error(2);
+		// console.error(3);
 		// await this._peerManager._stickers.loadRespData(data, 6, (searched)=>{
 		// 			console.error('searched', searched)
 		// 			this._cachedSearched[q] = searched;
@@ -161,7 +163,7 @@ class Stickers extends EmojiDialogItem {
 			if (!this.__setAdded[id] && this.isVisible) {
 				let set = this._app._peerManager._stickers._installed[id];
 				this.__setAdded[set._id] = true;
-				console.error('filling dom for', set);
+				// console.error('filling dom for', set);
 				this.fillStickerSetDOM(set, !!set.installed);
 				await this.setCatHTML(set);
 				if (!this.isVisible) {
@@ -376,7 +378,7 @@ class Stickers extends EmojiDialogItem {
 					tgss = this._recentTGSs;
 				}
 
-				console.error(closest.dataset);
+				// console.error(closest.dataset);
 
 				if (tgss[closest.dataset.id]) {
 					this._lastStickerToAnimate = closest.dataset.id;
@@ -384,7 +386,7 @@ class Stickers extends EmojiDialogItem {
 						clearTimeout(this._playStickerTimeout);
 					}
 					this._playStickerTimeout = setTimeout(()=>{
-						console.error(tgss[closest.dataset.id], 'once');
+						// console.error(tgss[closest.dataset.id], 'once');
 						tgss[closest.dataset.id].playOnce();
 					}, 200);
 				}
@@ -546,6 +548,9 @@ class Stickers extends EmojiDialogItem {
 					this._recentTGSsAsked[recentSticker.id] = true;
 					const json = await recentSticker.load();
 
+					// recalc el width if it's percent based
+					// el.style.width = '' + el.offsetWidth + 'px';
+
 					this._recentTGSs[recentSticker.id] = new TGS(el);
 					this._recentTGSs[recentSticker.id].setJSON(json, true, true, recentSticker);
 				}
@@ -595,7 +600,7 @@ class Stickers extends EmojiDialogItem {
 		}
 
 		let stickerSet = this._app._peerManager._stickers.byId(stickerSetId);
-		console.error('animation on', stickerSet);
+		// console.error('animation on', stickerSet);
 		if (stickerSet) {
 			for (let sticker of stickerSet._stickers) {
 				if (vDiv && vDiv.style.display == 'block') {

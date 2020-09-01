@@ -7,8 +7,8 @@ class Downloadable extends AbstractMessage {
 };
 
 Downloadable.template = `
-			<div id="message_{{message._id}}" data-id="{{message._id}}"
-				class="panelMessage{{if (options.fromMe)}} fromMe{{#else}} fromThem{{/if}} panelMessage{{viewType}} {{if (options.sameAsNext)}} sameAsNext{{/if}} messageAction"
+			<div id="message_{{message._id}}" data-id="{{message._id}}" data-moveaction="heat"
+				class="panelMessage{{if (options.fromMe)}} fromMe{{#else}} fromThem{{/if}} panelMessage{{viewType}} {{if (options.sameAsNext)}} sameAsNext{{/if}} messageAction messageMove"
 				title="{{message._id}}"
 				>
 

@@ -5,6 +5,7 @@ class MessageWebpage {
 		this._peerManager = params.peerManager;
 		this._apiObject = params.apiObject; // object returned from TG api
 		this._previewBase64 = null;
+		this._peerMessage = params.peerMessage;
 
 		this._id = this._apiObject.id;
 		this.blobURL = null;
@@ -31,7 +32,7 @@ class MessageWebpage {
 			return this.blobURL;
 		}
 
-		let blobURL = await this._peerManager._media.loadPreviewAndReturnBlobURL(this._apiObject.photo, 'x');
+		let blobURL = await this._peerManager._media.loadPreviewAndReturnBlobURL(this._apiObject.photo, 'x', this._peerMessage);
 		if (blobURL) {
 			this.blobURL = blobURL;
 			this.cached = true;

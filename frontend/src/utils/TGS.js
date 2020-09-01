@@ -159,6 +159,7 @@ class TGS {
 	async setData(data, doNotStart) {
 		await TGS._lottieReadyPromise;
 
+// window.lottie.setQuality('high');
 		// this._data = data;
 		const options = {
 			container: this._container,
@@ -170,6 +171,7 @@ class TGS {
 			    preserveAspectRatio: 'xMidYMid meet',
 			    progressiveLoad: true,
 			    clearCanvas: true,
+			    dpr: 2,
 			},
 		};
 		if (doNotStart) {

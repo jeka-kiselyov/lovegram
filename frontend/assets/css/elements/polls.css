@@ -318,6 +318,13 @@
 	animation: pabFl2 0.3s linear forwards;
 }
 
+.votedBefore .pollAnswer .pabFlow1 {
+	animation: pabFl1 0.0s linear forwards;
+}
+.votedBefore .pollAnswer .pabFlow2 {
+	animation: pabFl2 0.0s linear forwards;
+}
+
 @keyframes pabFl1 {
   0% {
 	width: 5px;

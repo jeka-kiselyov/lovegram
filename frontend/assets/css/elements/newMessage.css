@@ -244,10 +244,31 @@ textarea::-webkit-scrollbar {
 	display: none;
 }
 
+.newMessageVoice div {
+}
+
 .nmvDuration {
 	font-size: 14px;
 	vertical-align: middle;
 	display: inline-block;
+	opacity: 0;
+	transition: all .5s ease;
+}
+
+.mmvStatus {
+	display: inline-block;
+	width: 25px;
+	height: 29px;
+	position: relative;
+
+}
+
+.mmvStatus svg {
+	margin-top: 18px;
+}
+
+.mmvStatus path {
+	fill: red;
 }
 
 .nmvRecording {
@@ -259,9 +280,32 @@ textarea::-webkit-scrollbar {
 	vertical-align: middle;
 	margin: 20px 10px 20px 10px;
 	opacity: 0;
+	position: absolute;
+	right: 0px;
+	opacity: 0;
+	z-index: 2;
+	transition: all .5s ease;
 }
 
-.nmvRecording.active {
+.nmvInitializing {
+	display: inline-block;
+	width: 20px;
+	height: 34px;
+	overflow: hidden;
+	margin: 0 5px 0 5px;
+	position: absolute;
+	z-index: 1;
+	right: 0px;
+	opacity: 0;
+	transition: all .5s ease;
+}
+.nmvInitializing div {
+	margin-top: 18px;
+	width: 10px;
+	height: 10px;
+}
+
+.newMessageVoice div.active {
 	opacity: 1;
 }
 

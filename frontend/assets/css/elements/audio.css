@@ -46,6 +46,7 @@
 	height: 16px;
 	overflow: hidden;
 	width: 250px;
+	max-width: calc(100% - 62px);
 }
 
 .audioTrack {

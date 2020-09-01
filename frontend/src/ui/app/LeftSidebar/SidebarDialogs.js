@@ -23,9 +23,9 @@ class SidebarDialogs extends SidebarAbstract {
 		}
 	}
 
-	updateBadge() {
+	updateBadge(forceBadge) {
 		if (this._parent.updateBadge && this._folder) {
-			this._parent.updateBadge(this._folder);
+			this._parent.updateBadge(!forceBadge ? this._folder : null);
 		}
 	}
 
@@ -44,6 +44,7 @@ class SidebarDialogs extends SidebarAbstract {
 				['click', 'sidebarDialogs'+this._domId, 'onPeerClick'],
 				['mouseover', 'sidebarDialogs'+this._domId, 'onMouseOver'],
 				['touchstart', 'sidebarDialogs'+this._domId, 'onMouseDown'],
+				['touchmove', 'sidebarDialogs'+this._domId, 'onTouchMove'],
 				['mousedown', 'sidebarDialogs'+this._domId, 'onMouseDown'],
 				['scroll', 'sidebarDialogsScroll'+this._domId, 'onScroll'],
 				['contextmenu', 'sidebarPeers'+this._domId, 'onDialogContext'],
@@ -86,6 +87,7 @@ class SidebarDialogs extends SidebarAbstract {
 			this._renderPeerTimeouts = {};
 
 			const renderPeer = (params)=>{
+				// console.error('unread this._ignoreMessageEvents', this._ignoreMessageEvents);
 				if (this._peerManager._loadingMorePeers) return;
 				if (this._ignoreMessageEvents) {
 					return true;
@@ -115,7 +117,16 @@ class SidebarDialogs extends SidebarAbstract {
 							this.updateBadge();
 						}
 					}, 200);
+
+					if (params.forceBadge && this._cIds[peer._id]) {
+						this._cIds[peer._id].rerender();
+					}
 				}
+
+				if (params.forceBadge) {
+					this.updateBadge(true);
+				}
+
 				//  && !this._filter(peer)) {
 				// 	console.error('removing peer', params.peer);
 				// 	this.removePeer(peer);
@@ -129,7 +140,13 @@ class SidebarDialogs extends SidebarAbstract {
 			this._mostRecentPeerDate = null;
 			this._ignoreMessageEvents = true;
 
-			this._peerManager.on('unreadCount', renderPeer);
+			this._peerManager.on('unreadCount', (params)=>{
+
+				// console.error('unreadCount', params.peer._id, params.peer._unreadCount);
+
+				params.forceBadge = true;
+				renderPeer(params);
+			});
 			this._peerManager.on('updated', renderPeer);
 			this._peerManager.on('online', renderPeer);
 
@@ -166,7 +183,7 @@ class SidebarDialogs extends SidebarAbstract {
 
 
 	async loadUntilFilled() {
-		const max = 5;
+		const max = 10;
 		let i = 0;
 		const loader = this.$('.loadingMore');
 		const cont = this.$('.sidebarScroll');
@@ -225,36 +242,6 @@ class SidebarDialogs extends SidebarAbstract {
 		}
 	}
 
-	onDialogContext(e) {
-		e.preventDefault();
-
-		const base = this.$();
-		let closest = event.target.closest('.scBlock');
-		if (closest && base.contains(closest)) {
-			const peerId = closest.dataset.id;
-			const peer = this._peerManager.peerById(peerId);
-
-			const menuItems = [];
-			if (this.isPinned(peer)) {
-				menuItems.push(['pin', 'unpin', 'Unpin Dialog']);
-			} else {
-				menuItems.push(['pin', 'pin', 'Pin Dialog']);
-			}
-
-			if (!this._folder) {
-				if (peer.isArchived()) {
-					menuItems.push(['archive', 'archived', 'Unarchive Dialog']);
-				} else {
-					menuItems.push(['archive', 'archived', 'Archive Dialog']);
-				}
-			}
-
-			this._components['DialogsMenu'].show(e, menuItems);
-			this._components['DialogsMenu']._peer = peer;
-		}
-
-	    return false;
-	}
 
 	setActivePeer(peer) {
 		const curActive = this.$('#sidebarPeers'+this._domId).querySelector('.active');
@@ -306,20 +293,79 @@ class SidebarDialogs extends SidebarAbstract {
 	}
 
 	onMouseDown(e) {
+		if (e.button) return;
 		this._MouseDown = true;
 		try {
-			console.error(e, 'onMouseDown', e.target.closest('.scBlock'));
+			// console.error(e, 'onMouseDown', e.target.closest('.scBlock'));
 			const peer = this._peerManager.peerById(e.target.closest('.scBlock').dataset.id);
 			if (peer) {
 				clearTimeout(this._mouseOverTimeout);
 				this._ignoreMessageEvents = true;
 				app._interface._components.PanelTopBar.avatarToMemory(peer._id, e.target.closest('.scBlock').querySelector('.avatarBack'));
-				peer.makeReady()
-					.then(()=>{
-						this._ignoreMessageEvents = false;
-					});
+				if (peer._isReady && !this.isTouchDevice()) {
+					// show instantly
+					this._app._interface.onPeerSelected({peer: peer});
+					this._ignoreMessageEvents = false;
+				} else {
+					peer.makeReady()
+						.then(()=>{
+							this._ignoreMessageEvents = false;
+						});
+				}
 			}
-		} catch(er) { console.error(er); }
+		} catch(er) {}
+
+		if (e.touches) {
+			clearTimeout(this._ltt);
+			this._ltt = setTimeout(()=>{
+				const event = new MouseEvent('contextmenu', {
+											bubbles: true,
+											cancelable: true,
+											clientX: e.touches[0].clientX,
+											clientY: e.touches[0].clientY,
+										});
+				e.target.dispatchEvent.call(e.target,event);
+			},1200);
+		}
+	}
+
+	onTouchMove() {
+		clearTimeout(this._ltt);
+	}
+
+	onDialogContext(e) {
+		e.preventDefault();
+
+		// console.log(e.clientX, e.clientY);
+		// console.log(e.pageX, e.pageY);
+		clearTimeout(this._ltt);
+
+		const base = this.$();
+		let closest = event.target.closest('.scBlock');
+		if (closest && base.contains(closest)) {
+			const peerId = closest.dataset.id;
+			const peer = this._peerManager.peerById(peerId);
+
+			const menuItems = [];
+			if (this.isPinned(peer)) {
+				menuItems.push(['pin', 'unpin', 'Unpin Dialog']);
+			} else {
+				menuItems.push(['pin', 'pin', 'Pin Dialog']);
+			}
+
+			if (!this._folder) {
+				if (peer.isArchived()) {
+					menuItems.push(['archive', 'archived', 'Unarchive Dialog']);
+				} else {
+					menuItems.push(['archive', 'archived', 'Archive Dialog']);
+				}
+			}
+
+			this._components['DialogsMenu'].show(e, menuItems);
+			this._components['DialogsMenu']._peer = peer;
+		}
+
+	    return false;
 	}
 
 	onMouseOver(e) {
@@ -327,13 +373,19 @@ class SidebarDialogs extends SidebarAbstract {
 			const peer = this._peerManager.peerById(e.target.closest('.scBlock').dataset.id);
 			if (peer) {
 				clearTimeout(this._mouseOverTimeout);
-				this._mouseOverTimeout = setTimeout(()=>{
+				const mr = ()=>{
 					this._ignoreMessageEvents = true;
 					peer.makeReady()
 						.then(()=>{
 							this._ignoreMessageEvents = false;
 						});
-				}, 100);
+				};
+				if (!this._ignoreMessageEvents) {
+					mr();
+				} else {
+					this._mouseOverTimeout = setTimeout(mr, 100);
+				}
+
 			}
 		} catch(e) {}
 	}
@@ -341,7 +393,7 @@ class SidebarDialogs extends SidebarAbstract {
 	onPeerClick(e) {
 		this._MouseDown = false;
 
-		console.error(e, 'clickinpeer', e.target.closest('.scBlock'));
+		// console.error(e, 'clickinpeer', e.target.closest('.scBlock'));
 		const base = this.$();
 		let closest = e.target.closest('.scBlock');
 		if (closest && base.contains(closest)) {
@@ -352,6 +404,7 @@ class SidebarDialogs extends SidebarAbstract {
 				this._app._interface.onPeerSelected({peer: peer});
 			}
 		}
+		clearTimeout(this._ltt);
 	}
 
 	removePeer(peer) {

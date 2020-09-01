@@ -129,7 +129,13 @@ const fetchObject = async function(event) {
 		    		streamPromiseResolvers[promiseId] = res;
 		    	});
 
-			    event.waitUntil(postMessageToClient(event, { command: 'waitfor', documentId: documentId, partN: partN }));
+		    	console.error('sw url', event.request.url);
+		    	if (event.request.url.indexOf('preview') == -1) {
+		    		// console.error('sending message');
+				    event.waitUntil(postMessageToClient(event, { command: 'waitfor', documentId: documentId, partN: partN }));
+		    	} else {
+		    		// console.error('not sending message');
+		    	}
 		    } else {
 		    	// console.error('Media | There is promise already', promiseId);
 		    }
@@ -142,10 +148,10 @@ const fetchObject = async function(event) {
 
 			// console.time('theCache.match');
 			if (!ab) {
-			    console.error('sw | lookin in cache ');
+			    // console.error('sw | lookin in cache ');
 			    partResponse = await FileCacher.match(partURL);
 			} else {
-				console.error('sw | got ab', ab, partN);
+				// console.error('sw | got ab', ab, partN);
 			}
 			// console.timeEnd('theCache.match');
 	    }
@@ -351,8 +357,8 @@ self.addEventListener('fetch', function(event) {
 // });
 
 self.addEventListener('message', event => {
-	console.log('sw message');
-	console.log(event);
+	// console.log('sw message');
+	// console.log(event);
 
 	if (event && event.data) {
 		if (event.data.command == 'clean') {
@@ -413,14 +419,16 @@ self.addEventListener('message', event => {
 			// fullfill stream part
 			let documentId = event.data.documentId;
 			let partN = event.data.partN;
-			let promiseId = 'sp'+documentId+'_'+partN;
 
-			console.log('Media | ', event.data);
+			// console.log('Media | ', event.data);
+
+
+
 
 			let fulfill = function(pId) {
 				if (event.data.ab) {
 					if (streamPromiseResolvers[pId]) {
-					    console.log('fulfill promise ', pId);
+					    // console.log('fulfill promise ', pId);
 						streamPromiseResolvers[pId](event.data.ab);
 					}
 				} else {
@@ -436,7 +444,14 @@ self.addEventListener('message', event => {
 				}
 			}
 
-			fulfill(promiseId);
+			let promiseId = 'sp'+documentId+'_';
+			if (Array.isArray(partN)) {
+				partN.forEach((n)=>{
+					fulfill(promiseId+n);
+				});
+			} else {
+				fulfill(promiseId+partN);
+			}
 		}
 	}
 });

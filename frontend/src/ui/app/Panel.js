@@ -23,6 +23,9 @@ class Panel extends PanelEScroll {
 			// ['click', 'panelSearch', 'onStartSearch'],
 			// ['click', 'panelMore', 'onShowMore'],
 			['click', 'panelPush', 'onMessageClick'],
+			['mousemove', 'panelPush', 'onMessageMove'],
+			['touchstart', 'panelPush', 'onTouchStart'],
+			['touchmove', 'panelPush', 'onTouchMove'],
 			['contextmenu', 'panelPush', 'onMessageContext'],
 			// ['mousedown', 'panel', 'onMouseDown'],
 		];
@@ -36,6 +39,11 @@ class Panel extends PanelEScroll {
 		// this._components['RightSidebar'] = this.newC(RightSidebar);
 
 		this._components['StickersPopup'] = this.newC(StickersPopup);
+
+		// setTimeout(()=>{
+		// 	this.onMessageClick({target: this.$('#message_201611')});
+		// 	// this._components['SearchCalendar'].show({peerManager: this._peerManager});
+		// }, 500);
 
 		this._components['MessageMenu'] = this.newC(Menu, {items: [
 					['reply', 'reply', 'Reply'],
@@ -259,14 +267,14 @@ class Panel extends PanelEScroll {
 		let started = this._data.peer._id;
 		let loadedSomething = false;
 
-		let workOnMessagePreview = async (message) => {
+		let workOnMessagePreview = async (message, dcShift) => {
 			// console.error('workOn message preview cache', message._id, message);
 
 			if (message._media) {
 				if (message._media.cached) {
 					this.sendDataToMessage(message, 'photoLoaded', message._media.blobURL);
 				} else {
-					let blobURL = await message._media.loadPreview();
+					let blobURL = await message._media.loadPreview(dcShift);
 					if (blobURL) {
 						this.sendDataToMessage(message, 'photoLoaded', blobURL);
 					}
@@ -281,7 +289,7 @@ class Panel extends PanelEScroll {
 					await new Promise((res)=>{setTimeout(res,10);});
 				} else {
 					// console.error('sticker was not cached');
-					await message._sticker.load();
+					await message._sticker.load(dcShift);
 
 					this.sendDataToMessage(message, 'stickerLoaded', message._sticker);
 
@@ -295,7 +303,7 @@ class Panel extends PanelEScroll {
 				} else {
 					console.error('webpage photo was not cached');
 					if (message._webpage.getInfo('hasPhoto')) {
-						await message._webpage.loadPhoto();
+						await message._webpage.loadPhoto(dcShift);
 
 						this.sendDataToMessage(message, 'webpagePhotoLoaded', message._webpage);
 
@@ -314,25 +322,42 @@ class Panel extends PanelEScroll {
 
 			// for (let i = (baseN ? baseN : arr.length-1); )
 
+			let promises = [];
+			let dcShift = 1;
 			for (let i = 0; ((i+baseN) <= mL || (baseN-i) >= 0); i++) {
-				let success = false;
+				// let success = false;
 				if (arr[baseN-i] && !arr[baseN-i]._previewProcessed) {
 			// console.error('baseN', arr[baseN-i]._id);
 					const item = arr[baseN-i];
-					success = await workOnMessagePreview(item);
+
+					promises.push(workOnMessagePreview(item, dcShift++));
+					// success = await workOnMessagePreview(item);
 					item._previewProcessed = true;
 				}
 				if (arr[baseN+i] && !arr[baseN+i]._previewProcessed) {
 			// console.error('baseN', arr[baseN+i]._id);
 					const item = arr[baseN+i];
-					let success2 = await workOnMessagePreview(item);
-					if (!success) {
-						success = success2;
-					}
+
+					promises.push(workOnMessagePreview(item, dcShift++));
+					// let success2 = await workOnMessagePreview(item);
+					// if (!success) {
+					// 	success = success2;
+					// }
 					item._previewProcessed = true;
 				}
 
-				if (success) {
+				if (dcShift >= 3) {
+					let rs = await Promise.all(promises);
+					if (rs.indexOf(true) != -1) {
+						return true;
+					}
+					promises = [];
+				}
+			}
+
+			if (promises.length) {
+				let rs = await Promise.all(promises);
+				if (rs.indexOf(true) != -1) {
 					return true;
 				}
 			}
@@ -370,8 +395,29 @@ class Panel extends PanelEScroll {
 	// 	this._components.RightSidebar.onSearch();
 	// }
 
+
+	onTouchStart(e) {
+		if (e.touches) {
+			clearTimeout(this._ltt);
+			this._ltt = setTimeout(()=>{
+				const event = new MouseEvent('contextmenu', {
+											bubbles: true,
+											cancelable: true,
+											clientX: e.touches[0].clientX,
+											clientY: e.touches[0].clientY,
+										});
+				e.target.dispatchEvent.call(e.target,event);
+			},1200);
+		}
+	}
+
+	onTouchMove() {
+		clearTimeout(this._ltt);
+	}
+
 	onMessageContext(e) {
 		e.preventDefault();
+		clearTimeout(this._ltt);
 
 		const base = this.$();
 		let closest = event.target.closest('.panelMessage');
@@ -395,11 +441,28 @@ class Panel extends PanelEScroll {
 	    return false;
 	}
 
+	onMessageMove(e) {
+		let closest = e.target.closest('.messageMove');
+		if (closest && closest.dataset.moveaction) {
+			const messageId = closest.dataset.id;
+			let message = null;
+			if (this._data.peer._messageIds[messageId]) {
+				message = this._data.peer._messageIds[messageId];
+			} else if (this._cIds[messageId]) {
+				message = this._cIds[messageId]._data.message;
+			}
+			if (message && closest.dataset.moveaction == 'heat') {
+				message.heatServersUp();
+			}
+		}
+	}
+
 	onMessageClick(e) {
+		clearTimeout(this._ltt);
 		// this._components.RightSidebar.show();
 
 		const base = this.$();
-		let closest = event.target.closest('.messageAction');
+		let closest = e.target.closest('.messageAction');
 		// if (!closest) {
 		// 	closest = event.target.closest('.panelMessageSticker');
 		// }
@@ -688,6 +751,10 @@ class Panel extends PanelEScroll {
 
 		this._peerManager.setActivePeer(peer);
 
+
+		this.nextTick(()=>{
+			this._app._router.hashPeer(peer);
+		});
 		// this._components.RightSidebar.setPeer(peer);
 	}
 

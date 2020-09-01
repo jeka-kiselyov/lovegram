@@ -14,6 +14,7 @@ class RightSidebarMedia extends RightSidebarInfoAbstract {
 		this._events = [
 			['scroll', 'rsMediaItems', 'onScroll'],
 			['click', 'rsMediaItems', 'onClick'],
+			['mousemove', 'rsMediaItems', 'onMove'],
 		];
 
 		// this._data = {
@@ -24,6 +25,17 @@ class RightSidebarMedia extends RightSidebarInfoAbstract {
 
 		this._hasMoreThumbsToPreview = false;
 		// this._hasMoreMediaItems = true;
+	}
+
+	onMove(e) {
+		const closest = e.target.closest('.rsMedia');
+		if (closest && closest.dataset.id) {
+			for (let item of this._data.items) {
+				if (item.id == closest.dataset.id) {
+					item.heatServersUp();
+				}
+			}
+		}
 	}
 
 	onClick(e) {
@@ -92,18 +104,19 @@ class RightSidebarMedia extends RightSidebarInfoAbstract {
 		// console.error('loadNextThumb')
 
 		let loadedSomething = false;
-		let nextTimeout = 500;
+		let nextTimeout = 100;
+		let dcShift = 1;
 
 		for (let mItem of this._data.items) {
 			if (!this._processedPreviews[mItem.id]) {
 				// console.error(mItem.id);
 				if (mItem.cached) {
 					// console.error('cached');
-					nextTimeout = 50;
+					nextTimeout = 10;
 				}
 				// if (!mItem.cached) {
 				this._processedPreviews[mItem.id] = true;
-				let blobURL = await mItem.loadPreview();
+				let blobURL = await mItem.loadPreview(dcShift++);
 				// console.error('right sidebar load ', mItem);
 				let mediaDOM = this.$('#rsMediaPreview_'+mItem.id);
 				if (blobURL && mediaDOM) {
@@ -133,8 +146,16 @@ class RightSidebarMedia extends RightSidebarInfoAbstract {
 	 * @return {[type]} [description]
 	 */
 	async itemsAddedCallback(addedItems) {
+		// console.error('RightSidebarMedia | checking items in cache');
+		// for (let item of addedItems) {
+		// 	console.error('RightSidebarMedia | item from cache '+item.url+' ', item.cached, item.blobURL)
+		// }
 		await MessageMedia.loadPreviewsFromCache(addedItems.filter(item => !item.blobURL));
 		this._hasMoreThumbsToPreview = true;
+		// console.error('RightSidebarMedia | checking items in cache done');
+		// for (let item of addedItems) {
+		// 	console.error('RightSidebarMedia | item from cache '+item.url+' ', item.cached, item.blobURL)
+		// }
 		this.loadNextThumb();
 	}
 

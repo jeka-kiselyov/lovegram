@@ -175,28 +175,50 @@ class MediaPlayer extends EventTarget {
 	}
 
 	async initRecorder() {
+		if (this._isRecording) {
+			return true;
+		}
+
 		this._isRecording = true;
 		this._recordedStartAt = null;
 		this._recordedFinishAt = null;
 
-		await Res.includeOnce('assets/js/oggrecorder.js');
-		this._recorder = new Recorder({
-			encoderPath: 'assets/js/oggworker.js',
-			encoderSampleRate: 24000,
-			encoderApplication: 2048,
-			reuseWorker: true,
-		});
+		if (!this._recorder) {
+			await Res.includeOnce('assets/js/oggrecorder.js');
+			this._recorder = new Recorder({
+				encoderPath: 'assets/js/oggworker.js',
+				encoderSampleRate: 24000,
+				encoderApplication: 2048,
+				reuseWorker: true,
+			});
+	        this._recorder.ondataavailable = (typedArray)=>{
+	        	this._recorded = typedArray;
+	        };
+		}
 
-        this._recorder.ondataavailable = (typedArray)=>{
-        	this._recorded = typedArray;
-        };
+        try {
+			await this._recorder.start();
+			console.log('duration', 'started');
+			this._recordedStartAt = new Date();
+        } catch(e) {
+        	console.error(e);
 
-		await this._recorder.start();
-		this._recordedStartAt = new Date();
+			this._isRecording = false;
+			return false;
+        }
+
+        if (this._recordedFinishAt !== null) {
+        	await this.stopRecorder();
+        }
+        return true;
 	}
 
 	async stopRecorder() {
-		this._recorder.stop();
+		try {
+			this._recordedFinishAt = new Date();
+			await this._recorder.stop();
+			console.log('duration', 'stoped');
+		} catch(e) {}
 		this._isRecording = false;
 	}
 };

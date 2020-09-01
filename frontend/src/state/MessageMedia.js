@@ -177,6 +177,7 @@ class MessageMedia extends Streamable {
 			sentByPeerUserName: '',
 			sentByPeerUserAtDateHuman: '',
 			caption: '',
+			sizeHuman: '',
 		};
 
 		if (this._messageApiObject) {
@@ -224,6 +225,10 @@ class MessageMedia extends Streamable {
 			}
 		}
 
+		if (this._apiObject.size) {
+			this._preparedInfo.sizeHuman = this.sizeToHuman(this._apiObject.size);
+		}
+
 		if (this._apiObject.sizes) {
 			for (let size of this._apiObject.sizes) {
 				if (size.w > this._preparedInfo.width) {
@@ -253,17 +258,18 @@ class MessageMedia extends Streamable {
 	}
 
 	static async loadPreviewsFromCache(messageMedias) {
+		// console.error('checking media cache', messageMedias);
 		await app._user._protocol.getCachedResources(messageMedias);
 	}
 
-	async loadPreview() {
+	async loadPreview(dcShift) {
 		// console.error('loadPreview', this._messageApiObject.id);
 
 		if (this.blobURL) {
 			return this.blobURL;
 		}
 
-		let blobURL = await this._peerManager._media.loadPreviewAndReturnBlobURL(this._apiObject);
+		let blobURL = await this._peerManager._media.loadPreviewAndReturnBlobURL(this._apiObject, 'm', this._peerMessage, dcShift);
 		if (blobURL) {
 			this.blobURL = blobURL;
 			this.cached = true;
@@ -287,7 +293,7 @@ class MessageMedia extends Streamable {
 			return this._originalBlobURL;
 		}
 
-		let originalBlobURL = await this._peerManager._media.loadPreviewAndReturnBlobURL(this._apiObject, 'o');
+		let originalBlobURL = await this._peerManager._media.loadPreviewAndReturnBlobURL(this._apiObject, 'o', this._peerMessage);
 		if (originalBlobURL) {
 			this._originalBlobURL = originalBlobURL;
 		} else {
@@ -304,209 +310,12 @@ class MessageMedia extends Streamable {
 		return './tg/svideo/doc_'+this.id+'_stream_'+this._apiObject.size+'.mp4';
 	}
 
-	// async getDownloadedBlob() {
-	// 	if (this._blobStream === null) {
-	// 		let that = this;
-	// 		this._blobStream = new ReadableStream({
-	// 			start(controller) {
-	// 				function pushStream(stream) {
-	// 					const reader = stream.getReader();
-	// 					return reader.read().then(function process(result) {
-	// 							if (result.done) return;
-	// 							controller.enqueue(result.value);
-	// 							console.log('added');
-	// 							return reader.read().then(process);
-	// 						});
-	// 				}
-	// 				that.pushToStream = pushStream;
-	// 				that.finishStream = ()=>{
-	// 					controller.close();
-	// 				};
-	// 		    }
-	// 		});
-
-	// 		this._addedBlobsToStream = 0;
-	// 		for (let blob of this._partBlobs) {
-	// 			let stream = blob.stream();
-	// 			await this.pushToStream(stream);
-	// 			this._addedBlobsToStream++;
-	// 		}
-
-	// 		let headers = {'Content-Type': this._apiObject.mime_type, 'Content-Length': this._apiObject.size};
-	// 		const response = new Response(this._blobStream, headers);
-	// 		console.log(1);
-	// 		this.finishStream();
-	// 		let blob = await response.blob();
-	// 		console.log(2);
-	// 		let blobUrl = URL.createObjectURL(blob);
-
-	// 		this._streamBlobURL = blobUrl;
-	// 	} else {
-	// 		let i = 0;
-	// 		for (let blob of this._partBlobs) {
-	// 			if (i > this._addedBlobsToStream) {
-	// 				let stream = blob.stream();
-	// 				this.pushToStream(stream);
-	// 			}
-	// 			i++;
-	// 		}
-	// 	}
-
-	// 	return this._streamBlobURL;
-	// }
-
-	// scheduleDownload() {
-	// 	if (this._isDownloading || this._isDownloaded) {
-	// 		return true;
-	// 	}
-
-	// 	this._isDownloading = true;
-	// 	this._downloadingPercentage = 0;
-	// 	this._downloadingPartN = 0;
-	// 	this._totalParts = Math.ceil( this._apiObject.size / (512*1024) );
-	// 	this._partBlobs = [];
-	// 	this._downloadedParts = {};
-
-	// 	// setTimeout(()=>{
-	// 	// 	this._downloadingPercentage = 50;
-	// 	// 	this.downloadNextPart();
-	// 	// }, 5000);
-	// }
-
-	// async downloadPart(n) {
-	// 	if (this._downloadedParts[n]) {
-	// 		return true;
-	// 	}
-	// 	this._downloadedParts[n] = true;
-
-	// 	console.error('Media | Downloading part: ', n);
-
-	// 	let blob = await this._peerManager._media.loadFilePartAndReturnBlob(this._apiObject, n);
-
-	// 	console.error('Media | Downloaded part: ', n);
-
-	// 	await this._peerManager._user._protocol.fulfillSWStream(this.id, n);
-
-	// 	this._partBlobs.push({n: n, blob: blob});
-
-	// 	return true;
-	// }
-
-	// async downloadNextPart() {
-	// 	if (this._isDownloaded) {
-	// 		return true;
-	// 	}
-
-	// 	let downloadingPartN = this._downloadingPartN;
-	// 	let wasForced = false;
-
-	// 	// determine if sw asked for specific part
-	// 	if (this._peerManager._user._protocol._mostRecentSWMessage && this._peerManager._user._protocol._mostRecentSWMessage.command == 'waitfor') {
-	// 		downloadingPartN = this._peerManager._user._protocol._mostRecentSWMessage.partN;
-	// 		this._downloadingPartN = downloadingPartN;
-	// 		this._isDownloaded = false;
-	// 		this._peerManager._user._protocol._mostRecentSWMessage = null;
-
-	// 		wasForced = true;
-	// 		// this._downloadingPartN = downloadingPartN;
-	// 		// await this.downloadPart(forcedN);
-	// 	}
-
-	// 	// let alreadyWas = false;
-	// 	// for (let partBlob of this._partBlobs) {
-	// 	// 	if (partBlob.n == downloadingPartN) {
-	// 	// 		alreadyWas = true;
-	// 	// 	}
-	// 	// }
-
-	// 	if (this._isDownloaded) {
-	// 		return true;
-	// 	}
-
-
-	// 	if (wasForced) {
-	// 		// download few chunks in parallel
-	// 		let promises = [];
-	// 		let max = this._parallelC;
-	// 		let i = 0;
-	// 		do {
-	// 			promises.push(this.downloadPart(downloadingPartN));
-	// 			downloadingPartN++;
-	// 			if (downloadingPartN >= this._totalParts) {
-	// 				break;
-	// 			}
-	// 			i++;
-	// 		} while (i < max);
-
-	// 		await Promise.all(promises);
-	// 		this._downloadingPartN = downloadingPartN;
-	// 	} else {
-	// 		await this.downloadPart(downloadingPartN);
-	// 		this._downloadingPartN++;
-	// 	}
-
-	// 	if (this._downloadingPartN >= this._totalParts) {
-	// 		let thereIsMissed = false;
-	// 		for (let i = 0; i < this._totalParts; i++) {
-	// 			if (!this._downloadedParts[i] && !thereIsMissed) {
-	// 				thereIsMissed = true;
-	// 				this._downloadingPartN = i;
-	// 				break;
-	// 			}
-	// 		}
-
-	// 		if (!thereIsMissed) {
-	// 			this._isDownloaded = true;
-	// 		}
-	// 	}
-
-	// 	// if (!alreadyWas) {
-	// 	// 	let blob = await this._peerManager._media.loadFilePartAndReturnBlob(this._apiObject, downloadingPartN);
-	// 	// 	await this._peerManager._user._protocol.fulfillSWStream(this.id, downloadingPartN);
-
-	// 	// 	// console.error(blob);
-	// 	// 	// console.error(this._downloadingPartN, this._downloadingPercentage, this._totalParts);
-
-	// 	// 	this._partBlobs.push({n: downloadingPartN, blob: blob});
-	// 	// 	this._downloadedParts[downloadingPartN] = true;
-
-	// 	// 	this._downloadingPartN++;
-	// 	// 	this._downloadingPercentage = Math.ceil( (this._downloadingPartN / this._totalParts) * 100 );
-	// 	// 	this._downloadingSize = (512*1024) * this._downloadingPartN;
-
-	// 	// 	if (this._downloadingPartN >= this._totalParts) {
-	// 	// 		let thereIsMissed = false;
-	// 	// 		for (let i = 0; i < this._totalParts; i++) {
-	// 	// 			if (!this._downloadedParts[i] && !thereIsMissed) {
-	// 	// 				thereIsMissed = true;
-	// 	// 				this._downloadingPartN = i;
-	// 	// 			}
-	// 	// 		}
-
-	// 	// 		if (!thereIsMissed) {
-	// 	// 			this._isDownloaded = true;
-	// 	// 		}
-
-	// 	// 		// if (this._skippedPartN !== null) {
-	// 	// 		// 	this._downloadingPartN = this._skippedPartN;
-	// 	// 		// 	this._skippedPartN = null;
-	// 	// 		// } else {
-	// 	// 		// 	this._isDownloaded = true;
-	// 	// 		// }
-	// 	// 	} else {
-	// 	// 		// setTimeout(()=>{
-	// 	// 		// 	this.downloadNextPart();
-	// 	// 		// }, 100);
-	// 	// 	}
-	// 	// }
-	// }
-
 	getPreviewMediaCacheURL(isAlreadyCached) {
 		// if (isAlreadyCached === undefined) {
 		// 	// find if it's cached or not
 		// }
 
-		return './tg/message_photo_'+this._apiObject.id+'.jpg';
+		return './tg/message_photo_'+this._apiObject.id+'_m.jpg';
 	}
 
 	getPreviewBase64() {

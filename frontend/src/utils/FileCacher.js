@@ -165,7 +165,7 @@ class FileCacher {
 		});
 	}
 
-	put(url, response) {
+	put(url, response, lazy) {
 		let murl = '/tg/'+url.split('/tg/')[1];
 
 		return new Promise((res, rej)=>{
@@ -187,13 +187,13 @@ class FileCacher {
 						res(true);
 					};
 					tx.oncomplete = function(event) {
-						console.error('cached ok', murl);
+						// console.error('cached ok', murl);
 					// console.error('putting2 ', item, event);
 						res(true);
 					};
 
 					// console.error('putting', item);
-					const addRequest = store.add(item);
+					const addRequest = store[lazy ? 'put' : 'add'](item);
 
 					addRequest.onerror = function(e) {
 						// console.error(e);

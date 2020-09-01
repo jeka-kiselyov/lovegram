@@ -89,7 +89,7 @@ class SCBlock extends UI {
 			}
 		}
 
-		this.$('.scBlockTitle').innerHTML = this.escapeHTML(this._data.peer.getDisplayName());
+		this.$('.scBlockTitle').innerHTML = this._data.peer.getDisplayNameWB();
 
 		this.$().dataset.date = this._data.peer._mostRecentMessageDate;
 	}
@@ -105,7 +105,7 @@ SCBlock.template = `<div class="scBlock {{c}}" id="{{domId}}" title="{{peer._id}
 				</div>
 
 				<div class="scBlockMessage">
-					<div class="scBlockTitle">{{peer.getDisplayName()}}</div>
+					<div class="scBlockTitle">{{peer.getDisplayNameWB()|safe}}</div>
 					<div class="scBlockBody">{{peer.getDisplayMessage(true)|safe}}</div>
 				</div>
 			</div>

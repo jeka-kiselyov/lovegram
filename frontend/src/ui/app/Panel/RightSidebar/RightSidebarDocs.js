@@ -10,6 +10,7 @@ class RightSidebarDocs extends RightSidebarInfoAbstract {
 		this._events = [
 			['scroll', 'rs'+this._itemsName+'Items', 'onScroll'],
 			['click', 'rsDocsItems', 'onClick'],
+			['mousemove', 'rsDocsItems', 'onMove'],
 		];
 
 		// this._peerManager = this._app._peerManager;
@@ -68,6 +69,17 @@ class RightSidebarDocs extends RightSidebarInfoAbstract {
 					docContainer.querySelector('.rsDocMeta').innerHTML = ''+docItem.getInfo('sizeHuman')+" &bull; "+docItem.getInfo('dateHuman');
 					docContainer.querySelector('.rsDocIcon').classList.remove('loading');
 					docContainer.querySelector('.rsDocIcon').classList.add('ready');
+				}
+			}
+		}
+	}
+
+	onMove(e) {
+		const closest = e.target.closest('.rsDoc');
+		if (closest && closest.dataset.id) {
+			for (let item of this._data.items) {
+				if (item.id == closest.dataset.id) {
+					item.heatServersUp();
 				}
 			}
 		}

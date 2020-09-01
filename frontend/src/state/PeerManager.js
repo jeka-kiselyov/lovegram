@@ -148,6 +148,67 @@ class PeerManager extends EventTarget {
 		this.persist();
 	}
 
+	shortObjectToId(apiObject) {
+		if (apiObject.chat_id) {
+			return 'chat_'+apiObject.chat_id;
+		} else if (apiObject.channel_id) {
+			return 'channel_'+apiObject.channel_id;
+		} else if (apiObject.user_id) {
+			return 'dialog_'+apiObject.user_id;
+		}
+	}
+
+	async updatePinnedData(order, isArchived) {
+		let pinnedIds = [];
+		for (let o of order) {
+			pinnedIds.push(this.shortObjectToId(o.peer));
+		}
+		// console.error(pinnedIds);
+		for (let peer of this._sortedPeers) {
+			if (peer.isArchived() == isArchived) {
+				// console.error('checking peer was: '+(peer.isPinned() ? 'pinned' : 'not pinned'), peer._id);
+				let now = null;
+				if (peer.isPinned() && pinnedIds.indexOf(peer._id) == -1) {
+					now = false;
+				} else if (!peer.isPinned() && pinnedIds.indexOf(peer._id) != -1) {
+					now = true;
+				}
+
+				if (now !== null) {
+					peer._apiObject.pFlags.pinned = now;
+
+					// alert('peer pinned changed '+peer._id+' now: '+(now ? 'pinned' : 'not pinned'));
+					this.emit('peers'); // reflow
+				}
+			}
+		}
+	}
+
+// flags: 1
+// order: Array(5)
+// 0:
+// peer: {_: "peerUser", user_id: 617826063}
+// _: "dialogPeer"
+// __proto__: Object
+// 1:
+// peer: {_: "peerChannel", channel_id: 1322215945}
+// _: "dialogPeer"
+// __proto__: Object
+// 2:
+// peer: {_: "peerChannel", channel_id: 1144755728}
+// _: "dialogPeer"
+// __proto__: Object
+// 3:
+// peer: {_: "peerUser", user_id: 214013086}
+// _: "dialogPeer"
+// __proto__: Object
+// 4: {_: "dialogPeer", peer: {…}}
+// length: 5
+// __proto__: Array(0)
+// pFlags: {}
+// _: "updatePinnedDialogs"
+// __proto__: Object
+
 	async processApiUpdate(updateObject) {
 		// console.error('processApiUpdate')
 		console.error('API Update', updateObject);
@@ -157,6 +218,18 @@ class PeerManager extends EventTarget {
 			}
 			return;
 		}
+		if (updateObject._ == 'updatePinnedDialogs') {
+			// alert('updatePinnedDialogs');
+			setTimeout(()=>{
+				this.updatePinnedData(updateObject.order, updateObject.folder_id);
+			}, 500);
+			// if (!updateObject.folder_id) {
+			// 	// update pinned in main
+			// } else if (updateObject.folder_id == 1) {
+			// 	// update pinned in archive
+			// }
+		}
+		// "updateFolderPeers"
 		if (updateObject._ == 'updateDialogFilter') {
 			if (updateObject.filter) {
 				this.workFoldersData([updateObject.filter]);
@@ -220,6 +293,7 @@ class PeerManager extends EventTarget {
 		}
 	}
 
+
 	async peerByApiShortObject(apiObject, searchByMessages) {
 		// console.error('peerByApiShortObject', apiObject);
 
@@ -282,6 +356,8 @@ class PeerManager extends EventTarget {
 
 	setActivePeer(peer) {
 		this._activePeer = peer;
+
+		this.persist();
 	}
 
 	persist() {
@@ -520,7 +596,7 @@ class PeerManager extends EventTarget {
 
 
 		this._loadingMorePeers = false;
-		console.error('loadPeers ready');
+		// console.error('loadPeers ready');
 		this.emit('peers');
 	}
 
@@ -788,6 +864,23 @@ class PeerManager extends EventTarget {
 		}
 
 		this.emit('folders');
+	}
+
+	async updateHashes() {
+		const resp = await this._user.invoke('messages.getDialogs', {offset_peer: { "_": "inputPeerEmpty" }});
+		for (let chat of resp.data.chats) {
+			if (chat.access_hash) {
+				let peer = this.peerByAPIResult(chat);
+				(peer && (peer._apiObject.access_hash = chat.access_hash));
+			}
+		}
+		for (let obj of resp.data.users) {
+			if (obj.access_hash) {
+				let peerUser = this.peerUserByAPIResult(obj);
+				(peerUser && (peerUser._apiObject.access_hash = obj.access_hash));
+			}
+		}
+		return true;
 	}
 
 	async workApiData(resp) {

@@ -67,10 +67,6 @@ class NewMessage extends AppUI {
 
 		this._isSubmitDown = false;
 
-		// setTimeout(()=>{
-		// 	this.showEmoji();
-		// },1000);
-
 		this.setGlobalCatch();
 	}
 
@@ -111,29 +107,52 @@ class NewMessage extends AppUI {
 		this._hasVoice = false;
 		this.$('.newMessageContainer').classList.remove('withVoice');
 		this.$('.newMessageContainer').classList.remove('withVoiceRecorded');
+
+		this.$('.nmvDuration').classList.remove('active');
+		this.$('.nmvDuration').innerText = '';
 	}
 
 	async recordedDurationLoop() {
 		do {
 			let duration = this._app._mediaPlayer.getRecordedDuration();
 			let text = ''+Math.floor(duration / 60) + ':' + ('0' + (Math.floor(duration) % 60)).slice(-2) + ',' + ('0' + (Math.floor(duration*100) % 100)).slice(-2);
-			this.$('.nmvDuration').innerText = text;
-			console.log('loop');
+			this.$('.nmvDuration').innerText = (duration ? text : '');
+			// console.log('loop');
+
 			await new Promise((res)=>{setTimeout(res, 61);}); // looks natural with prime timeout
+
+			this.$('.nmvInitializing').classList[(duration ? 'remove' : 'add')]('active');
+			this.$('.nmvRecording').classList[(duration ? 'add' : 'remove')]('active');
+			this.$('.nmvDuration').classList[(duration ? 'add' : 'remove')]('active');
+
 		} while(this._app._mediaPlayer._isRecording);
+	}
+
+	async errorRecordIcon() {
+		const appIcon = new AppIcon({icon: 'nosound'});
+		const html = appIcon.render({noDOM: true});
+		this.$('.mmvStatusIcon').innerHTML = html;
 	}
 
 	async onDownSubmit() {
 		this._isSubmitDown = true;
 		if (this._messageType == 'voice' && !this._lastELength && !this._hasVoice) {
-			console.error('starting rec')
-
-			this._isRecording = true;
-			this.$('.nmvRecording').classList.add('active');
-			this._app._mediaPlayer.initRecorder();
-			this.recordedDurationLoop();
+			// console.error('starting rec')
 
 			this.$('.newMessageContainer').classList.add('withVoice');
+			this.$('.nmvDuration').innerText = '';
+			this.recordedDurationLoop();
+
+			this._isRecording = true;
+
+			let s = await this._app._mediaPlayer.initRecorder();
+			if (!s) {
+				this.errorRecordIcon();
+			} else {
+				this.$('.mmvStatusIcon').innerHTML = '';
+			}
+
+			this.recordedDurationLoop();
 		}
 
 		this.mouseupUpG(()=>{
@@ -150,6 +169,7 @@ class NewMessage extends AppUI {
 		if (this._messageType == 'voice' && this._isRecording) {
 			this._isRecording = false;
 			this.$('.nmvRecording').classList.remove('active');
+
 			await this._app._mediaPlayer.stopRecorder();
 			let duration = this._app._mediaPlayer.getRecordedDuration();
 
@@ -160,7 +180,8 @@ class NewMessage extends AppUI {
 			// 	this._hasVoice = true;
 			// 	this.setMessageType('message');
 			// }
-			if (duration == 0) {
+
+			if (duration < 0.3) {
 				this._hasVoice = false;
 				this.$('.newMessageContainer').classList.remove('withVoiceRecorded');
 				this.$('.newMessageContainer').classList.remove('withVoice');
@@ -172,6 +193,9 @@ class NewMessage extends AppUI {
 			this.emit('sendVoice');
 			this.$('.newMessageContainer').classList.remove('withVoiceRecorded');
 			this.$('.newMessageContainer').classList.remove('withVoice');
+
+			this.$('.nmvDuration').classList.remove('active');
+			this.$('.nmvDuration').innerText = '';
 
 			this._hasVoice = false;
 		}
@@ -497,8 +521,12 @@ NewMessage.template = `
 						<div class="attachButton" id="attachButton">{{component(options.components.IconAttach)}}{{/component}}</div>
 					</div>
 					<div class="newMessageVoice">
-						<div class="nmvDuration">0:02,43</div>
-						<div class="nmvRecording"></div>
+						<div class="nmvDuration"></div>
+						<div class="mmvStatus">
+							<div class="mmvStatusIcon"></div>
+							<div class="nmvRecording"></div>
+							<div class="nmvInitializing active"><div class="cssload-zenith dark"></div></div>
+						</div>
 					</div>
 					<div class="newMessageText"><textarea placeholder="Message" id="body"></textarea></div>
 				</div>

@@ -148,6 +148,22 @@ class PeerScroller extends EventTarget {
 		return false;
 	}
 
+	/**
+	 * Invoke api, if channel is invalid - re-query access_hash from getDialogs and invoke api again
+	 * @param  {[type]} method  [description]
+	 * @param  {[type]} options [description]
+	 * @return {[type]}         [description]
+	 */
+	async sureInvoke(method, options) {
+		let resp = await this._peerManager._user.invoke(method, options);
+		if (resp.data.type == 'CHANNEL_INVALID') {
+			await this._peerManager.updateHashes();
+			options.peer.access_hash = this._apiObject.access_hash;
+			resp = await this._peerManager._user.invoke(method, options);
+		}
+		return resp;
+	}
+
 	async loadMoreMessages(dir, messageId) {
 		if (this._loadingMoreMessages) return;
 
@@ -181,7 +197,7 @@ class PeerScroller extends EventTarget {
 			}
 		}
 
-		const resp = await this._peerManager._user.invoke('messages.getHistory', options);
+		const resp = await this.sureInvoke('messages.getHistory', options);
 
 		// console.time('processingresp');
 
