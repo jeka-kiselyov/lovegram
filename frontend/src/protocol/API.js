@@ -179,22 +179,6 @@ class API extends EventTarget {
 			}
 		}
 
-		// console.error(items);
-
-		// 		let cached = await FileCacher.match(url);
-		// 		items[i].cached = cached ? true : false;
-		// 		if (cached) {
-		// 			if (url.indexOf('.json') != -1) {
-		// 				/// tgs sticker, fulfill json
-		// 				items[i].json = await cached.text();
-		// 			} else {
-		// 				items[i].blob = await cached.blob();
-		// 				items[i].blobURL = URL.createObjectURL(items[i].blob);
-		// 			}
-		// 		}
-		// 	}
-		// }
-
 		return items;
 	}
 

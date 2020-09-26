@@ -18,23 +18,23 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
         this._beforeInit = params.beforeInit || null;
 
         this._outData = {
-            index: {
+            "index.html": {
                 content: null,
                 fileName: path.join(__dirname, '../frontend/index.html'),
                 contentType: 'text/html',
                 livereload: true
             },
-            favicon: {
+            "favicon.ico": {
                 content: null,
                 fileName: path.join(__dirname, '../frontend/favicon.ico'),
                 contentType: 'image/x-icon'
             },
-            robotstxt: {
+            "robots.txt": {
                 content: null,
                 fileName: path.join(__dirname, '../frontend/robots.txt'),
                 contentType: 'text/plain'
             },
-            sw: {
+            "sw.js": {
                 content: null,
                 fileName: path.join(__dirname, '../frontend/webpack/sw.config.js'),
                 compiledFileName: path.join(__dirname, '../frontend/dist/sw.js'),
@@ -43,7 +43,7 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
                 watch: true,
                 livereload: true
             },
-            authjs: {
+            "auth.js": {
                 content: null,
                 fileName: path.join(__dirname, '../frontend/webpack/auth.config.js'),
                 compiledFileName: path.join(__dirname, '../frontend/dist/auth.js'),
@@ -52,7 +52,7 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
                 watch: true,
                 livereload: true
             },
-            mtpjs: {
+            "mtp.js": {
                 content: null,
                 fileName: path.join(__dirname, '../frontend/webpack/mtp.config.js'),
                 compiledFileName: path.join(__dirname, '../frontend/dist/mtp.js'),
@@ -61,7 +61,7 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
                 watch: true,
                 livereload: true
             },
-            mtworkerjs: {
+            "mtworker.js": {
                 content: null,
                 fileName: path.join(__dirname, '../frontend/webpack/mtworker.config.js'),
                 compiledFileName: path.join(__dirname, '../frontend/dist/mtworker.js'),
@@ -70,7 +70,7 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
                 watch: true,
                 livereload: true
             },
-            webpworkerjs: {
+            "webpworker.js": {
                 content: null,
                 fileName: path.join(__dirname, '../frontend/webpack/webpworker.config.js'),
                 compiledFileName: path.join(__dirname, '../frontend/dist/webpworker.js'),
@@ -79,7 +79,7 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
                 watch: true,
                 livereload: true
             },
-            appjs: {
+            "app.js": {
                 content: null,
                 fileName: path.join(__dirname, '../frontend/webpack/app.config.js'),
                 compiledFileName: path.join(__dirname, '../frontend/dist/app.js'),
@@ -88,7 +88,7 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
                 watch: true,
                 livereload: true
             },
-            indexjs: {
+            "index.js": {
                 content: null,
                 fileName: path.join(__dirname, '../frontend/webpack.config.js'),
                 compiledFileName: path.join(__dirname, '../frontend/dist/index.js'),
@@ -124,29 +124,17 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
         }
 
         this._server.get('/*', {}, this.asyncWrap(this.index));
-        this._server.get('/favicon.ico', {}, this.asyncWrap(this.favicon));
-        this._server.get('/index.js', {}, this.asyncWrap(this.indexjs));
-        this._server.get('/auth.js', {}, this.asyncWrap(this.authjs));
-        this._server.get('/app.js', {}, this.asyncWrap(this.appjs));
-        this._server.get('/mtp.js', {}, this.asyncWrap(this.mtpjs));
-        this._server.get('/mtworker.js', {}, this.asyncWrap(this.mtworkerjs));
-        this._server.get('/webpworker.js', {}, this.asyncWrap(this.webpworkerjs));
-        this._server.get('/sw.js', {}, this.asyncWrap(this.sw));
-        this._server.get('/robots.txt', {}, this.asyncWrap(this.robotstxt));
+
+        for (let fname in this._outData) {
+            console.error(fname);
+            let key = fname;
+            this._server.get('/'+fname, {}, this.asyncWrap(async (req, res)=>{
+                let outData = await this.getOutData(key);
+                res.header('content-type', outData.contentType);
+                res.send(outData.content);
+            }));
+        }
         this._server.get('/assets/*', {}, this.asyncWrap(this.asset));
-
-
-        this._server.get('/subdir/*', {}, this.asyncWrap(this.index));
-        this._server.get('/subdir/favicon.ico', {}, this.asyncWrap(this.favicon));
-        this._server.get('/subdir/index.js', {}, this.asyncWrap(this.indexjs));
-        this._server.get('/subdir/auth.js', {}, this.asyncWrap(this.authjs));
-        this._server.get('/subdir/app.js', {}, this.asyncWrap(this.appjs));
-        this._server.get('/subdir/mtp.js', {}, this.asyncWrap(this.mtpjs));
-        this._server.get('/subdir/mtworker.js', {}, this.asyncWrap(this.mtworkerjs));
-        this._server.get('/subdir/webpworker.js', {}, this.asyncWrap(this.webpworkerjs));
-        this._server.get('/subdir/sw.js', {}, this.asyncWrap(this.sw));
-        this._server.get('/subdir/robots.txt', {}, this.asyncWrap(this.robotstxt));
-        this._server.get('/subdir/assets/*', {}, this.asyncWrap(this.asset));
 
         await this._server.ready();
         await this._server.listen(this._port, '0.0.0.0');
@@ -161,23 +149,22 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
         if (req && req.params && req.params['*']) {
             fname = req.params['*'];
         }
-        // let content = fs.readFileSync(path.join(__dirname, '../frontend/assets/'+fname));
-        if (fname.indexOf('.makaka') === -1) {
-            res
-                .type(mime.lookup(fname))
-                .compress(fs.createReadStream(path.join(__dirname, '../frontend/assets/'+fname)));
-        } else {
-            res
-                .send(fs.readFileSync(path.join(__dirname, '../frontend/assets/'+fname)));
-        }
 
-    //     res.header('content-type', mime.lookup(fname));
+        res.type(mime.lookup(fname))
+            .compress(fs.createReadStream(path.join(__dirname, '../frontend/assets/'+fname)));
+    }
 
-    // .compress(fs.createReadStream('./package.json'))
-    //     res.send(content);
-        // let content = fs.readFileSync(this._outData[name].fileName);
-        // res.header('content-type', outData.contentType);
-        // res.send(outData.content);
+    asyncWrap(fn, checkAuth) {
+        return async (req, res)=>{
+            this.log('Server request: '+req.raw.url);
+            await fn.call(this, req, res);
+        };
+    }
+
+    async index(req, res) {
+        let outData = await this.getOutData('index.html');
+        res.header('content-type', outData.contentType);
+        res.send(outData.content);
     }
 
     async initLivereload() {
@@ -215,12 +202,6 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
         }
     }
 
-    asyncWrap(fn, checkAuth) {
-        return async (req, res)=>{
-            this.log('Server request: '+req.raw.url);
-            await fn.call(this, req, res);
-        };
-    }
 
     async getOutData(name) {
         if (this._outData[name] && this._outData[name].content !== null) {
@@ -297,75 +278,6 @@ class Server extends LovaClass { /// LovaClass is also EventEmmiter
         }
 
         return this._outData[name];
-    }
-
-    async index(req, res) {
-        let outData = await this.getOutData('index');
-        res.header('content-type', outData.contentType);
-        res.send(outData.content);
-    }
-
-    async sw(req, res) {
-        let outData = await this.getOutData('sw');
-        res.header('content-type', outData.contentType);
-        res.send(outData.content);
-    }
-
-    async outjs(dataName, req, res) {
-        let etag = req.headers['if-none-match'] || '';
-        let outData = await this.getOutData(dataName);
-
-        if (outData.etag && outData.etag === etag) {
-            return res.status(304).send();
-        }
-
-        res.header('ETag', outData.etag);
-        res
-            .type(outData.contentType)
-            .compress(outData.content);
-    }
-
-    async indexjs(req, res) {
-       return await this.outjs('indexjs', req, res);
-    }
-
-    async authjs(req, res) {
-       return await this.outjs('authjs', req, res);
-    }
-
-    async mtpjs(req, res) {
-       return await this.outjs('mtpjs', req, res);
-    }
-
-    async mtworkerjs(req, res) {
-       return await this.outjs('mtworkerjs', req, res);
-    }
-
-    async webpworkerjs(req, res) {
-       return await this.outjs('webpworkerjs', req, res);
-    }
-
-    async sw(req, res) {
-       return await this.outjs('sw', req, res);
-    }
-
-    async appjs(req, res) {
-       return await this.outjs('appjs', req, res);
-    }
-
-    async robotstxt(req, res) {
-        req.requireAuth();
-        console.log(req.user);
-
-        let outData = await this.getOutData('robotstxt');
-        res.header('content-type', outData.contentType);
-        res.send(outData.content);
-    }
-
-    async favicon(req, res) {
-        let outData = await this.getOutData('favicon');
-        res.header('content-type', outData.contentType);
-        res.send(outData.content);
     }
 }
 
