@@ -48,48 +48,6 @@ class DialogFolder {
 		}
 	}
 
-	// async testCreation() {
-	// 	let ao = {
-	// 		_: 'dialogFilter',
-	// 		include_peers: [],
-	// 		exclude_peers: [],
-	// 		pinned_peers: [],
-	// 		bots: true,
-	// 		pFlags: {},
-	// 		contacts: false,
-	// 		non_contacts: false,
-	// 		groups: false,
-	// 		broadcasts: false,
-	// 		exclude_muted: false,
-	// 		exclude_read: false,
-	// 		exclude_archived: false,
-	// 		title: 'test',
-	// 		id: 9,
-	// 		flags: true,
-	// 		// emoticon: '',
-	// 	};
-
-	// 	const tryf = async (p)=>{
-	// 		const resp = await this._peerManager._user.invoke('messages.updateDialogFilter', p);
-	// 		console.error(resp)
-	// 		if (resp && resp.data && !resp.data.code) {
-	// 			alert('cool!');
-	// 		}
-	// 	};
-
-	// 	// await tryf({id: -1, filter: ao});
-	// 	// await tryf({id: 0, filter: ao});
-	// 	// await tryf({id: undefined, filter: ao});
-	// 	// await tryf({id: '', filter: ao});
-	// 	// await tryf({id: 4, filter: ao});
-
-	// 	// await tryf({flags: true, id: -1, filter: ao});
-	// 	// await tryf({flags: true, id: 0, filter: ao});
-	// 	// await tryf({flags: true, id: undefined, filter: ao});
-	// 	// await tryf({flags: true, id: '', filter: ao});
-	// 	await tryf({flags: true, id: 7, filter: ao});
-	// }
-
 	/**
 	 * Save dialog filter in api
 	 * @return {[type]} [description]

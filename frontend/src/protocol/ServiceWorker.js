@@ -5,7 +5,7 @@ const version = "0.0.1";
 const cacheName = `lovegram-0.0.1`;
 const config = require('../config/config.js');
 
-const FileCacher = require('./FileCacher.js');
+const FileCacher = require('../utils/FileCacher.js');
 
 
 let wPromises = {};
@@ -268,93 +268,8 @@ const fetchObject = async function(event) {
 
 self.addEventListener('fetch', function(event) {
 	event.respondWith(fetchObject(event));
-	// console.error(event);
-	// fetchObject(event).then((response)=>{
-	// console.error(response);
-	// console.error(event);
-	// 			event.respondWith(new Promise((res)=>{ res(response); }));
-	// console.error(event);
-	// });
-
-
-	// let n = new Promise((res,rej)=>{
-	// 	fetchObject(event)
-	// 		.then((response)=>{
-	// 			console.error(response);
-	// 			event.respondWith(new Promise((res)=>{ res(response); }));
-	// 			// console.error('resolved', response);
-	// 			// self.clients.matchAll().then(clients => {
-	// 			// 	console.error(clients);
-	// 			// });
-	// 			// res(response);
-	// 		})
-	// 		.catch((e)=>{
-	// 			console.error(e);
-	// 		});
-	// });
-
-	// n();
-	// let fo = fetchObject(event);
-	// console.error('fo', fo);
-	// try {
-	// 	let res = event.respondWith(n);
-	// } catch(e) {
-	// 	console.error(e);
-	// }
 });
 
-// self.addEventListener('fetch', event => {
-// 	let gCache = null;
-// 	event.respondWith(
-// 		caches.open(cacheName)
-// 			.then(cache => {
-// 				gCache = cache;
-// 				return gCache.match(event.request, {ignoreSearch: true});
-// 			})
-// 			.then(response => {
-// 				// console.warn('sw', response);
-// 				// console.warn('sw', event.request);
-// 				if (!response && event.request.url.indexOf('/tg/') != -1) {
-// 					// expected TG media resource, but it's not yet loaded
-// 					// console.log("expected TG media resource, but it's not yet loaded", event.request.url);
-// 					let promiseId = event.request.url.split('/tg/')[1];
-// 					if (!wPromises[promiseId]) {
-// 						wPromises[promiseId] = new Promise((resolve, reject)=>{
-// 							wPromisesResolvers[promiseId] = resolve;
-// 						});
-// 					}
-
-// 					return new Promise((res, rej)=>{
-// 						wPromises[promiseId]
-// 							.then((s)=>{
-
-// 								// setTimeout(()=>{
-
-// 									caches.open(cacheName)
-// 										.then(cache => {
-// 												cache.match(event.request, {ignoreSearch: true})
-// 													.then(response => {
-// 														// console.warn(promiseId);
-// 														// console.warn(response);
-// 														res(response);
-// 													});
-// 									});
-
-
-// 								// },5000);
-
-// 								console.error(s);
-// 							});
-// 						setTimeout(()=>{
-// 							wPromisesResolvers[promiseId](false);
-// 						},20000);
-// 					});
-// 				} else {
-// 					return response || fetch(event.request);
-// 				}
-// 		})
-// 	);
-// });
 
 self.addEventListener('message', event => {
 	// console.log('sw message');
@@ -362,12 +277,6 @@ self.addEventListener('message', event => {
 
 	if (event && event.data) {
 		if (event.data.command == 'clean') {
-			// console.error('Media | SW Startup Clean');
-			// console.error(wPromisesResolvers);
-			// console.error(wPromises);
-			// console.error(streamPromiseResolvers);
-			// console.error(streamPromises);
-			// clean promises (run for every page load)
 			for (let k in wPromisesResolvers) {
 				// console.error('Media | Clearing promise', k);
 				wPromisesResolvers[k](null);
@@ -420,11 +329,6 @@ self.addEventListener('message', event => {
 			let documentId = event.data.documentId;
 			let partN = event.data.partN;
 
-			// console.log('Media | ', event.data);
-
-
-
-
 			let fulfill = function(pId) {
 				if (event.data.ab) {
 					if (streamPromiseResolvers[pId]) {
@@ -456,6 +360,4 @@ self.addEventListener('message', event => {
 	}
 });
 
-
-// console.log('sw script loaded');
 
