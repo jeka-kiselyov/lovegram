@@ -11,10 +11,6 @@ class CodeInput extends UIInput {
 		this._lastLength = 0;
 	}
 
-	afterRender() {
-		this.preFocus('#'+this._domId+'_input');
-	}
-	
 	onChange(e) {
 		this.error(false);
 
