@@ -1,0 +1,172 @@
+
+
+.audio {
+
+}
+
+.audioButton {
+	float: left;
+	height: 54px;
+	width: 54px;
+    position: relative;
+    border-radius: 50%;
+    background-color: #50a2e9;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.audioButton div {
+	position: absolute;
+	height: 54px;
+	width: 54px;
+	text-align: center;
+	line-height: 54px;
+	opacity: 0;
+}
+
+.audioButton div.active {
+	opacity: 1;
+}
+
+.audioButton svg {
+	width: 50%;
+	height: 50%;
+	vertical-align: middle;
+}
+
+.audioButton path {
+	fill: #ffffff;
+}
+
+.audioTitle, .audioWaveform, .audioArtist, .audioTrack, .audioTime {
+	margin-left: 62px;
+	padding-top: 8px;
+	color: #000000;
+	font-size: 14px;
+	height: 16px;
+	overflow: hidden;
+	width: 250px;
+	max-width: calc(100% - 62px);
+}
+
+.audioTrack {
+	width: auto;
+}
+
+.audioTitle {
+	font-weight: bold;
+}
+
+
+
+.audioWaveform {
+	height: 24px;
+	line-height: 24px;
+	position: relative;
+}
+
+.awOver {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: transparent;
+	z-index: 1;
+}
+
+.awi {
+	display: inline-block;
+	width: 2px;
+	margin-right: 2px;
+	background-color: #cbcbcb;
+	height: 10px;
+	line-height: normal;
+	vertical-align: sub;
+}
+
+.awi.seeked {
+	background-color: #50a2e9;
+}
+
+
+
+
+.audioTrack {
+	position: relative;
+	display: none;
+}
+
+.audioTrack.seeking:after {
+	content: "";
+	display: block;
+	width: 10000px;
+	height: 10000px;
+	margin-left: -5000px;
+	margin-top: -5000px;
+	position: fixed;
+	background: transparent;
+	z-index: 9999999999;
+}
+
+.audioArtist {
+	color: #707579;
+	display: none;
+}
+
+.audioTrack.active, .audioArtist.active {
+	display: block;
+}
+
+.audioLine {
+	position: absolute;
+	z-index: 1;
+	border-bottom: 2px solid #e6ecf0;
+	height: 5px;
+	width: 100%;
+}
+
+.audioSeek {
+	position: absolute;
+	z-index: 2;
+	border-bottom: 2px solid #50a2e9;
+	height: 5px;
+	min-width: 12px;
+	/*transition: all .2s ease;*/
+}
+
+.audioSeek:after {
+	content: "";
+	display: block;
+	background-color: #50a2e9;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	position: absolute;
+	right: 0;
+}
+
+
+.audioTime {
+	color: #707579;
+}
+
+.fromMe .audioSeek {
+	border-color: #4fae4e;
+}
+.fromMe .audioSeek:after {
+	background-color: #4fae4e;
+}
+.fromMe .audioButton {
+	background-color: #4fae4e;
+}
+.fromMe .awi {
+	background-color: #aedfa4;
+}
+.fromMe .awi.seeked {
+	background-color: #4fae4e;
+}
+
+.fromMe .audioArtist, .fromMe .audioTime {
+	color: #4fae4e;
+}

@@ -11,6 +11,6 @@ module.exports = {
 	poll: false,			// enable poll for state difference, better to switch off when debuging other parts
 	pollInterval: 2000, // poll interval in ms,
 	persistMediaCache: true, // keep media cached between browser sessions
-	persistServiceWorkerCache: false, // cache scripts and styles between sessions
+	persistServiceWorkerCache: true, // cache scripts and styles between sessions
 	maxParallelConnections: 3, /// Count of websocket connections to media servers,
 };
