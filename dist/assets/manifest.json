@@ -1,0 +1,27 @@
+{
+  "name": "LoveGram",
+  "short_name": "LoveGram",
+  "description": "Telegram for the Love",
+  "icons": [
+      {
+        "src": "../favicon.ico",
+        "type": "image/x-icon",
+        "sizes": "32x32"
+      }, 
+      {
+        "src": "./images/logo.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      }, 
+      {
+        "src": "./images/logo.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+      ],
+  "start_url": "/?homescreen=1",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4ca9f9"
+}

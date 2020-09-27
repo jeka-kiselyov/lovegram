@@ -1,0 +1,51 @@
+#emojiPopupTop {
+	display: none;
+}
+
+.stickersPreview {
+	clear: both;
+	position: relative;
+	height: 300px;
+	overflow: hidden;
+	margin-top: 20px;
+}
+
+.stickersPreview .stickerSetDiv {
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-position: top left;
+}
+
+.stickerSetDiv .animated, .stickerSetDiv span {
+	width: 75px;
+	height: 75px;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	float: left;
+	cursor: pointer;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.stickerSetDiv .animatedNoPadd {
+	margin-right: 0;
+}
+
+.stickersButton {
+    border-top: 1px solid #dadce0;
+	margin: 0px -10px 0 -10px;
+    padding: 10px 100px 0px 100px;
+}
+
+.stickersButton .button {
+	margin-bottom: 0;
+}
+
+
+@media (max-width:850px) {
+	.stickerSetDiv .animated, .stickerSetDiv span {
+		width: 20%;
+		margin-right: 0;
+	}
+}

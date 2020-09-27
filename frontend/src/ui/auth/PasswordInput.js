@@ -39,13 +39,13 @@ class PasswordInput extends UIInput {
 		}
 	}
 
-	afterRender() {
-		this.preFocus('#'+this._domId+'_input');
-	}
-
 	onChange(e) {
 		this.checkLabel();
 		this.$('.input').classList.remove('error');
+
+		if (e.keyCode && e.keyCode == 13) {
+			this.emit('enter');
+		}
 	}
 };
 

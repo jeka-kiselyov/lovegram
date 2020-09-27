@@ -1,0 +1,28 @@
+.rightSidebarPoll .sfpFolders {
+	border-top: 2px solid #dbdde1;
+}
+
+.rightSidebarPoll h1 {
+	margin: 20px 10px 20px 20px;
+	padding: 0;
+	color: #000000;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.rightSidebarPoll h4 {
+	margin: 8px 10px 8px 10px;
+}
+
+.rightSidebarPoll h4 span {
+	float: right;
+}
+
+.rightSidebarPoll .scBlockMore_include {
+	display: none;
+}
+
+
+.rightSidebarPoll .scBlockMore_include.visible {
+	display: block;
+}

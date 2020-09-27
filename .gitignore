@@ -1,6 +1,5 @@
 # Builds
 frontend/dist/*
-dist/*
 
 # Logs
 logs

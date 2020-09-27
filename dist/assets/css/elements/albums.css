@@ -1,0 +1,40 @@
+
+.panelMessageAlbum {
+}
+
+.messageAlbum {
+	position: relative;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    margin: -8px -14px 8px -14px;
+}
+
+.messageAlbumOnly {
+	margin-bottom: 0;
+	margin-bottom: -2px;
+	border-bottom-left-radius: 8px;
+}
+
+.fromThem .messageAlbumOnly {
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 8px;
+
+}
+
+.sameAsNext .messageAlbumOnly {
+	border-radius: 8px;
+}
+
+.messageAlbumItem {
+	position: absolute;
+	z-index: 2;
+	background-size: cover;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+.messageAlbum .messageMeta {
+	position: absolute;
+	z-index: 3;
+
+}

@@ -1,0 +1,124 @@
+
+#calendarPopupTop .popup {
+	overflow: hidden;
+}
+
+#calendarTitle {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+#calendarNav {
+	padding: 10px 15px;
+}
+
+#calendarNav div {
+	height: 40px;
+	overflow: hidden;
+	cursor: pointer;
+}
+#calendarNav svg {
+	margin-top: 10px;
+}
+#calendarNav svg path {
+	fill: #888;
+}
+#calendarNav:hover svg path {
+	fill: #000;
+}
+
+#calendarPrev {
+	float: left;
+	width: 20%;
+}
+#calendarPrev svg {
+	 -webkit-transform: rotateZ(270deg);
+	transform: rotateZ(270deg);
+}
+
+#calendarNext {
+	float: right;
+	width: 20%;
+	text-align: right;
+}
+#calendarNext svg {
+	 -webkit-transform: rotateZ(90deg);
+	transform: rotateZ(90deg);
+}
+
+
+#calendarCur {
+	width: 60%;
+	float: left;
+	text-align: center;
+	font-size: 16px;
+	font-weight: bold;
+	padding-top: 14px;
+}
+
+#calendarDays {
+	clear: both;
+}
+/*
+#calendarDays span {
+	color: #888;
+}
+*/
+#calendarDays span, #calendarItems span {
+	color: #888;
+	width: 14%;
+	overflow: hidden;
+	float: left;
+	text-align: center;
+	padding: 2px 0;
+}
+#calendarItems span.has {
+	color: #000;
+}
+#calendarItems i {
+	border-radius: 50%;
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+	max-height: 80%;
+	line-height: 40px;
+}
+
+#calendarItems span.has i {
+	cursor: pointer;
+}
+
+#calendarItems span.has i:hover {
+	background: #50a2e9;
+	color: #ffffff;
+}
+
+#calendarButtons {
+	clear: both;
+	text-align: right;
+	font-size: 20px;
+}
+
+#calendarItems {
+	margin-top: 20px;
+	position: relative;
+	height: 250px;
+}
+
+#calendarItems div {
+	position: absolute;
+	transition: all .5s ease;
+}
+
+#calendarItemsNext, #calendarItemsCurrent.gonext {
+	transform: translateX(100%);
+	opacity: 0.2;
+}
+#calendarItemsPrev, #calendarItemsCurrent.goprev {
+	transform: translateX(-100%);
+	opacity: 0.2;
+}
+#calendarItemsNext.gocur, #calendarItemsPrev.gocur  {
+	transform: translateX(0%);
+	opacity: 1;
+}

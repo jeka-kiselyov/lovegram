@@ -26,10 +26,6 @@ class PhoneInput extends UIInput {
 		this._phoneNumber = null;
 	}
 
-	afterRender() {
-		this.preFocus('#'+this._domId+'_input');
-	}
-
 	error(eCode) {
 		// console.log('E');
 		// console.log(eCode);
@@ -78,7 +74,6 @@ class PhoneInput extends UIInput {
 
 
 	onChange(e) {
-		console.log('onChange');
 		this.checkLabel();
 		this.error(false);
 
@@ -131,102 +126,6 @@ class PhoneInput extends UIInput {
 		});
 
 		return true;
-
-
-
-		// if (value.indexOf('+') !== 0) {
-		// 	value = '+'+value;
-		// }
-
-		// if (key) {
-		// 	value+=String.fromCharCode(key);
-		// }
-
-		// value = value.replace(/[^\d+]/g,'').substring(0,15); // ? 10 ?
-
-		// console.log('v:'+value);
-
-		// if (value.length < 2) {
-		// 	console.log('empty cc');
-		// 	value = '+';
-		// 	this._countryCode = null;
-		// 	this.emit('country', null);
-		// }
-
-		// let foundCountry = null;
-		// let foundMaxLength = 0;
-		// let foundDialCode = null;
-		// for (let country of countries) {
-		// 	let dialCode = country.dialCode.split(' ').join('');
-		// 	if (value.indexOf(dialCode) === 0) {
-		// 		if (dialCode.length > foundMaxLength) {
-		// 			foundCountry = country;
-		// 			foundMaxLength = dialCode.length;
-		// 			foundDialCode = dialCode;
-		// 		}
-		// 	}
-		// }
-
-		// if (foundCountry && foundDialCode != this._countryCode) {
-		// 	this._countryCode = foundDialCode;
-		// 	this.emit('country', foundCountry);
-		// }
-
-		// if (this._countryCode && value.indexOf(this._countryCode) !== 0) {
-		// 	this._countryCode = null;
-		// 	this.emit('country', null);
-		// }
-
-
-		// // @todo:
-		// // https://github.com/nosir/cleave.js/blob/master/src/addons/phone-type-formatter.i18n.js
-		// // +
-		// // https://redstapler.co/format-phone-number-input-javascript/
-		// // or
-		// // https://github.com/catamphetamine/libphonenumber-js/blob/master/PhoneNumberMetadata.xml
-		// // (\d)(\d{2})(\d{2})(\d{2})(\d{2})
-		// // $1 $2 $3 $4 $5
-
-		// // const rule = [1,2,2,2,2]; /// @todo: get rule by countryCode
-
-		// let formatted = value;
-		// let raw = value;
-		// if (this._countryCode) {
-		// 	formatted = '';
-		// 	let rule = null;
-		// 	value = value.split(this._countryCode).join('');
-
-		// 	rule = (this._country ? this._country.rule : [2,3,2,2]) || [2,3,2,2];
-
-		// 	for (let i = 0, si = 0, sl = 0; i < value.length; i++) {
-		// 		if (!rule || si < rule.length) {
-		// 			formatted+=value.charAt(i);
-		// 		}
-		// 		sl++;
-		// 		if (rule && sl == rule[si]) {
-		// 			si++;
-		// 			if (si < rule.length) {
-		// 				formatted+=' ';
-		// 			}
-		// 			sl = 0;
-		// 		}
-		// 	}
-
-		// 	formatted = this._countryCode+' '+formatted;
-		// }
-
-
-		// console.log('formatted :'+formatted);
-		// // const formattedNumber = value.replace(new RegExp(/(\d)(\d{2})(\d{2})(\d{2})(\d{2})/g), "$1 $2 $3 $4 $5");
-		// // this.val(formatted);
-		// this.$('#'+this._domId+'_input').value = formatted;
-
-		// this.emit('phone', {phone: raw, formatted: formatted});
-
-		// console.log(value);
-		// console.log(e.code);
-		// console.log(formatted);
-
 	}
 };
 

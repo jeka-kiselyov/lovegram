@@ -12,7 +12,6 @@ class SignIn extends UI {
 	constructor(params) {
 		super(params);
 
-
 		this._data = {
 			state: 'undefined',
 		};
@@ -48,6 +47,7 @@ class SignIn extends UI {
 			['name', 'FirstNameInput', 'onFirstName'],
 			['name', 'LastNameInput', 'onLastName'],
 			['visible', 'PasswordInput', 'onPwVisible'],
+			['enter', 'PasswordInput', 'onNext'],
 		];
 
 		this._cToHighlightOnE = null; // component to highlight if there's error from State
@@ -109,6 +109,14 @@ class SignIn extends UI {
 		this.$$('.inputs').forEach((el)=>{ el.classList.remove('inputsVisible'); });
 		if (this.$('#authInputs_'+state)) {
 			this.$('#authInputs_'+state).classList.add('inputsVisible');
+		}
+
+		if (state == 'wfcode') {
+			this.preFocus('#'+this._components.CodeInput._domId+'_input'); // focus if not touch
+		} else if (state == 'wf2a') {
+			this.preFocus('#'+this._components.PasswordInput._domId+'_input'); // focus if not touch
+		} else if (state == 'wfreg') {
+			this.preFocus('#'+this._components.FirstNameInput._domId+'_input'); // focus if not touch
 		}
 	}
 
@@ -178,19 +186,16 @@ class SignIn extends UI {
 		this._data.phoneNumber = data.phone || data.raw;
 		this._data.phoneNumberFormatted = data.formatted;
 
-		console.error('lading monkey');
 		this._components.SignInInfo.preloadMonkey();
 
 		this._components.SignInInfo.setPhone(data.formatted);
 	}
 
 	onCountry(country) {
-		// preload the monkey here
-
-		// console.log('Country');
-		// console.log(country);
 		this._components.PhoneInput.setCountry(country);
 		this._components.CountryInput.setCountry(country);
+
+		this.preFocus('#'+this._components.PhoneInput._domId+'_input'); // focus if not touch
 	}
 
 	template() {

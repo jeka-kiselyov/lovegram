@@ -1,0 +1,1 @@
+.ripple{width:2px;height:2px;display:block;position:absolute;border-radius:50%;background-color:rgba(112,117,121,.2);left:50%;top:50%;margin-left:-1px;margin-right:-1px;animation:rippleEffect .5s ease-in-out forwards}@keyframes rippleEffect{0%{transform:scale(1)}100%{background-color:rgba(112,117,121,.1);transform:scale(var(--scale))}}

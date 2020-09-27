@@ -1,0 +1,13 @@
+{
+	"root": "dist/",
+	"https_only": true,
+	"routes": {
+		"/assets/*": "/assets/",
+		"/**": "index.html"
+	},
+	"headers": {
+		"/assets/**": {
+			"Cache-Control": "public, max-age=512000"
+		}
+	}
+}

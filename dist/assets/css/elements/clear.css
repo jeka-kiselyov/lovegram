@@ -1,0 +1,124 @@
+/*@font-face {
+  font-family: emoji;
+
+  src: local('Apple Color Emoji'),
+       local('Android Emoji'),
+       local('Segoe UI'),
+       local(EmojiSymbols),
+       local(Symbola);
+
+  unicode-range: U+1F300-1F5FF, U+1F600-1F64F, U+1F680-1F6FF, U+2600-26FF;
+}*/
+
+@font-face { /* https://www.google.com/get/noto/#noto-emoji-zsye */
+	/*local("Noto Color Emoji"), local("Apple Color Emoji"), local("Segoe UI Emoji"),*/
+  font-family: Noto;
+	src: local("Noto Color Emoji"), local("Apple Color Emoji"), local("Segoe UI Emoji");
+       /*url("https://cdn.rawgit.com/googlefonts/noto-emoji/master/fonts/NotoColorEmoji.ttf");*/
+  unicode-range: U+1F300-1F5FF, U+1F900-1F9FF, U+1F600-1F64F, U+1F680-1F6FF, U+2600-26FF, U+2700-27BF, U+2300-23FF, U+1F000-1F02F, U+1F100-1F1FF, U+1F20-1F2FF, U+2122, U+2139, U+FE00-FE0F;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font: inherit;
+	font-size: 100%;
+	vertical-align: baseline;
+    font-family: Noto,'Roboto',sans-serif,-apple-system;
+	/*font-family: Noto, 'Roboto', Verdana, Geneva, sans-serif;*/
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	-webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+}
+strong {
+	font-weight: bold;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+input:focus, textarea:focus, select:focus{
+    outline: none;
+}
+*:focus {
+    outline: none;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=number] {
+    -moz-appearance:textfield; /* Firefox */
+}
+
+div, span,
+h1, h2, h3, h4, h5, h6, p {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Opera and Firefox */
+}
+
+html {
+	min-height: 100%;
+}
+
+body {
+	background: #fff;
+	min-height: 100vh;
+	font-size: 14px;
+	font-style: normal; font-variant: normal;
+}
+
+html, body {
+  overflow-x: hidden;
+}
+body {
+  position: relative;
+}
+
+.hidden {
+	display: none !important;
+}
+
+html,body{
+    height:100%;
+}

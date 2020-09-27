@@ -1,0 +1,17 @@
+.checkbox {
+	width: 18px;
+	height: 18px;
+}
+
+.checkbox div {
+	position: absolute;
+	opacity: 0;
+}
+
+.checkbox div.active {
+	opacity: 1;
+}
+
+.checkbox svg path {
+	fill: #50a2e9;
+}

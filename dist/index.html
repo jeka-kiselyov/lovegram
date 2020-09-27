@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>LoveGram</title>
+	<meta name="description" content="Telegram for the Web"/>
+	<meta name="theme-color" content="#4ca9f9"/>
+	<link rel="apple-touch-icon" href="assets/images/logo.png">
+	<link rel=icon href="favicon.ico" type=image/x-icon>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel='manifest' href='assets/manifest.json'>
+
+
+</head>
+<style type="text/css">
+	#preloading {
+	}
+
+	.authForm {
+		opacity: 0;
+		transition: all .5s ease;
+	}
+
+	.cssload-zenith {
+		height: 18px;
+		width: 18px;
+		margin: 0 auto;
+		border-radius: 50%;
+		border-color: transparent #ffffff #ffffff #ffffff;
+		border-width: 2px;
+		border-style: solid;
+		/*box-shadow: 1px 1px 1px rgb(255,255,255);*/
+		animation: cssload-spin 990ms infinite linear;
+		-o-animation: cssload-spin 990ms infinite linear;
+		-ms-animation: cssload-spin 990ms infinite linear;
+		-webkit-animation: cssload-spin 990ms infinite linear;
+		-moz-animation: cssload-spin 990ms infinite linear;
+	}
+
+
+	.inputLoading .cssload-zenith, .cssload-zenith.dark {
+		border-color: transparent #449be5 #449be5 #449be5;
+	}
+
+	.cssload-zenith.onDark {
+		border-color: transparent #ffffff #ffffff #ffffff;
+		background: rgba(0,0,0,0.3);
+		-webkit-box-shadow: 0px 0px 0px 3px rgba(0,0,0,0.3);
+		box-shadow: 0px 0px 0px 3px rgba(0,0,0,0.3);
+	}
+
+	@keyframes cssload-spin {
+		100%{ transform: rotate(360deg); transform: rotate(360deg); }
+	}
+
+	@-o-keyframes cssload-spin {
+		100%{ -o-transform: rotate(360deg); transform: rotate(360deg); }
+	}
+
+	@-ms-keyframes cssload-spin {
+		100%{ -ms-transform: rotate(360deg); transform: rotate(360deg); }
+	}
+
+	@-webkit-keyframes cssload-spin {
+		100%{ -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+	}
+
+	@-moz-keyframes cssload-spin {
+		100%{ -moz-transform: rotate(360deg); transform: rotate(360deg); }
+	}
+
+	.appIsLoading {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: #ffffff;
+		z-index: 999999;
+		opacity: 1;
+		transition: opacity .3s ease;
+	}
+
+	.appIsLoading .cssload-zenith {
+		margin-top: 50vh;
+		width: 50px;
+		height: 50px;
+	}
+
+	.appIsLoading.loaded {
+		opacity: 0;
+	}
+</style>
+<body>
+
+	<div id="preloading" class="appIsLoading"><div class="cssload-zenith dark"></div></div>
+	<div id="interface"><div id="auth"></div><div id="app"></div></div>
+
+	<script type="text/javascript" src="./auth.js"></script>
+	<link rel="stylesheet" href="./assets/css/common.css">
+
+	<div id="avmemory"></div>
+
+</body>
+</html>
