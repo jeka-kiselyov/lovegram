@@ -8,7 +8,7 @@ Telegram Developer Challenges JavaScript Contest Entry
 
 [Stage 3](https://contest.com/javascript-web-3) III PLACE
 
-The goal was to create a simplified web version of Telegram without using third-party UI frameworks. You can check built version online [here](https://lovegramtesta.herokuapp.com/).
+The goal was to create a simplified web version of Telegram without using third-party UI frameworks. You can check most recent built version online [here](https://lovegram.herokuapp.com/).
 
 ### TLDR?
 
